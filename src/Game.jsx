@@ -1,11 +1,28 @@
 // import { INVALID_MOVE } from "boardgame.io/core";
+// import { isAdjacentTile } from "./Board";
 
-export const MovementTest = {
+export const DungeonHopper = {
   setup: () => ({
-    tiles: Array(25).fill(null).fill("Mario", 22, 23),
+    tiles: Array(36).fill(null).fill("Hero", 22, 23).fill("Gobbo", 2, 3),
     players: [
-      { name: "Mario", position: 22, id: 0, moveTiles: 6 },
-      { name: "Goomba", position: 2, id: 1, moveTiles: 6 },
+      {
+        name: "Hero",
+        position: 22,
+        id: 0,
+        moveTiles: 3,
+        attack: 1,
+        hitPoints: 3,
+        team: 0,
+      },
+      {
+        name: "Gobbo",
+        position: 2,
+        id: 1,
+        moveTiles: 3,
+        attack: 1,
+        hitPoints: 1,
+        team: 1,
+      },
     ],
   }),
 
@@ -19,7 +36,6 @@ export const MovementTest = {
       G.tiles[tileIdx] = currentPlayerName;
       G.players[playerID].position = tileIdx;
       currentPlayer.moveTiles -= 1;
-      console.log("moves left:", G.players[playerID].moveTiles);
     },
   },
 };

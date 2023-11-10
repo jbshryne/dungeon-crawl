@@ -1,7 +1,8 @@
 import { Client } from "boardgame.io/react";
-import { MovementTest } from "./Game";
-import { MovementTestBoard } from "./Board";
+import { DungeonHopper } from "./Game";
+import { Board } from "./Board";
+import "./App.css";
 
-const App = Client({ game: MovementTest, board: MovementTestBoard });
+const App = Client({ game: DungeonHopper, board: Board });
 
 export default App;
