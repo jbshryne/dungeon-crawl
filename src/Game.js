@@ -1,44 +1,25 @@
-// export const MovementTest = () => {
-//   setup: () => ({ cells: Array(9).fill(null) }),
-
-//   moves: {
-//     moveOneSquare: (G, ctx, id) => {
-//       G.cells[id] = ctx.currentPlayer;
-//     },
-//   }
-// }
-
-import { INVALID_MOVE } from "boardgame.io/core";
-
-function isSameTile(G, ctx, id) {
-  const currentPlayerID = ctx.currentPlayer;
-
-  return id === G.players[currentPlayerID].position;
-}
+// import { INVALID_MOVE } from "boardgame.io/core";
 
 export const MovementTest = {
-  setup: () => ({ cells: Array(25).fill(null).fill("0", 22, 23) }),
+  setup: () => ({
+    tiles: Array(25).fill(null).fill("Mario", 22, 23),
+    players: [
+      { name: "Mario", position: 22, id: 0, moveTiles: 6 },
+      { name: "Goomba", position: 2, id: 1, moveTiles: 6 },
+    ],
+  }),
 
   moves: {
-    // clickCell: (G, ctx, id) => {
-    // console.log(id, ctx.currentPlayer);
-    // if ((G.cells[id] = ctx.currentPlayer)) {
-    //   return alert("You clicked yourself!");
-    // }
-    // return INVALID_MOVE;
-    // },
-    clickCell: ({ G, playerID }, id) => {
-      console.log(G.cells[id], playerID);
-      // console.log(isSameTile(G, ctx, id));
+    moveOneSquare: ({ G, playerID }, tileIdx) => {
+      const currentPlayer = G.players[playerID];
+      const currentPlayerPosition = currentPlayer.position;
+      const currentPlayerName = currentPlayer.name;
 
-      // if (G.cells[id] !== null) {
-      //   return INVALID_MOVE;
-      // }
-      if (G.cells[id] === playerID) {
-        alert("You clicked yourself!");
-      }
-      // console.log(id);
-      // alert(typeof playerID);
+      G.tiles[currentPlayerPosition] = null;
+      G.tiles[tileIdx] = currentPlayerName;
+      G.players[playerID].position = tileIdx;
+      currentPlayer.moveTiles -= 1;
+      console.log("moves left:", G.players[playerID].moveTiles);
     },
   },
 };
