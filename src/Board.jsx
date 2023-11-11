@@ -1,25 +1,13 @@
 import { useState } from "react";
-// import { DungeonHopper } from "./Game";
 
 export function Board({ ctx, G, moves }) {
   const [hoveredTile, setHoveredTile] = useState(null);
-  const currentPlayer = G.players[ctx.currentPlayer];
+  // const currentPlayer = G.players[ctx.currentPlayer];
   const currentPosition = G.players[ctx.currentPlayer].position;
   const boardTiles = G.tiles.length;
 
   const onClick = (tileIdx) => {
-    // if (tileIdx === currentPosition) {
-    //   getAccessibleTiles(
-    //     currentPosition,
-    //     currentPlayer.moveTiles,
-    //     G.tiles.length
-    //   );
-    // }
-
-    if (
-      isAdjacentTile(tileIdx, currentPosition, boardTiles) &&
-      currentPlayer.moveTiles > 0
-    ) {
+    if (isAdjacentTile(tileIdx, currentPosition, boardTiles)) {
       if (G.tiles[tileIdx] === null) {
         moves.moveOneSquare(tileIdx);
       } else {
@@ -42,11 +30,7 @@ export function Board({ ctx, G, moves }) {
     for (let j = 0; j < Math.sqrt(boardTiles); j++) {
       const id = Math.sqrt(boardTiles) * i + j;
       const isAdjacent = isAdjacentTile(id, currentPosition, boardTiles);
-      // const isAdjacent = getAccessibleTiles(
-      //   currentPosition,
-      //   currentPlayer.moveTiles,
-      //   boardTiles
-      // ).includes(id);
+
       tiles.push(
         <td key={id}>
           <div
