@@ -1,10 +1,59 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function Board({ ctx, G, moves }) {
   const [hoveredTile, setHoveredTile] = useState(null);
-  // const currentPlayer = G.players[ctx.currentPlayer];
-  const currentPosition = G.players[ctx.currentPlayer].position;
   const boardTiles = G.tiles.length;
+  const currentPlayer = G.players[ctx.currentPlayer];
+  const currentPosition = currentPlayer.position;
+
+  const handleKeyPress = (event) => {
+    const key = event.key.toLowerCase();
+    console.log(key);
+    const movementKeys = [
+      "w",
+      "a",
+      "s",
+      "d",
+      "arrowup",
+      "arrowleft",
+      "arrowdown",
+      "arrowright",
+    ];
+
+    if (movementKeys.includes(key)) {
+      event.preventDefault(); // Prevent page scrolling on arrow key presses
+
+      let newTile;
+      switch (key) {
+        case "w":
+        case "arrowup":
+          newTile = currentPosition - Math.sqrt(boardTiles);
+          break;
+        case "a":
+        case "arrowleft":
+          newTile = currentPosition - 1;
+          break;
+        case "s":
+        case "arrowdown":
+          newTile = currentPosition + Math.sqrt(boardTiles);
+          break;
+        case "d":
+        case "arrowright":
+          newTile = currentPosition + 1;
+          break;
+        default:
+          break;
+      }
+
+      if (isAdjacentTile(newTile, currentPosition, boardTiles)) {
+        if (G.tiles[newTile] === null) {
+          moves.moveOneSquare(newTile);
+        } else {
+          moves.attack(newTile);
+        }
+      }
+    }
+  };
 
   const onClick = (tileIdx) => {
     if (isAdjacentTile(tileIdx, currentPosition, boardTiles)) {
@@ -24,24 +73,40 @@ export function Board({ ctx, G, moves }) {
     }
   };
 
+  useEffect(() => {
+    // Attach the event listener when the component mounts
+    document.addEventListener("keydown", handleKeyPress);
+
+    // Detach the event listener when the component unmounts
+    return () => {
+      document.removeEventListener("keydown", handleKeyPress);
+    };
+    // eslint-disable-next-line
+  }, [currentPosition, boardTiles, moves]);
+
   let tbody = [];
   for (let i = 0; i < Math.sqrt(boardTiles); i++) {
     let tiles = [];
     for (let j = 0; j < Math.sqrt(boardTiles); j++) {
-      const id = Math.sqrt(boardTiles) * i + j;
-      const isAdjacent = isAdjacentTile(id, currentPosition, boardTiles);
+      const idx = Math.sqrt(boardTiles) * i + j;
+      const isAdjacent = isAdjacentTile(idx, currentPosition, boardTiles);
+      const isOpponent =
+        isAdjacent &&
+        G.tiles[idx] !== null &&
+        G.players.find((player) => G.tiles[idx] === player.name).team !==
+          currentPlayer.team;
 
       tiles.push(
-        <td key={id}>
+        <td key={idx}>
           <div
             className={`tile ${isAdjacent && "adjacent"} ${
-              id === hoveredTile && "hovered"
-            }`}
-            onClick={() => onClick(id)}
-            onMouseEnter={() => onTileHover(id)}
+              idx === hoveredTile && "hovered"
+            } ${isOpponent && "opponent"}`}
+            onClick={() => onClick(idx)}
+            onMouseEnter={() => onTileHover(idx)}
             onMouseLeave={() => setHoveredTile(null)}
           >
-            {G.tiles[id]}
+            {G.tiles[idx]}
           </div>
         </td>
       );

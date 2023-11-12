@@ -3,13 +3,14 @@
 
 const hero = {
   name: "Hero",
-  position: 9,
+  position: 22,
   id: 0,
   attackDice: 3,
   defenseDice: 2,
   hitPoints: 4,
   team: "HERO",
   moveTiles: 3,
+  isMoving: false,
   hasMoved: false,
   hasDoneAction: false,
 };
@@ -23,6 +24,7 @@ const enemy = {
   hitPoints: 3,
   team: "ENEMY",
   moveTiles: 3,
+  isMoving: false,
   hasMoved: false,
   hasDoneAction: false,
 };
@@ -38,10 +40,41 @@ export const DungeonHopper = {
   }),
 
   moves: {
-    moveOneSquare: ({ G, ctx, events, playerID }, tileIdx) => {
-      console.log("You moved to tile " + tileIdx);
-      console.log(G);
+    rollMovementDice: ({ G, ctx, random, events, playerID }) => {
+      const currentPlayer = G.players[playerID];
+      if (currentPlayer.isMoving) {
+        console.log("You are already moving!");
+      } else if (currentPlayer.hasMoved) {
+        console.log("You have already moved this turn!");
+      } else {
+        currentPlayer.isMoving = true;
+        const movementRoll = random.D6(2);
+        const movementTotal = movementRoll[0] + movementRoll[1];
+        currentPlayer.moveTiles = movementTotal;
+        console.log(
+          `${currentPlayer.name} rolled ${movementRoll[0]} and ${movementRoll[1]} for a total of ${movementTotal} movement tiles`
+        );
+      }
     },
+
+    moveOneSquare: ({ G, events, playerID }, tileIdx) => {
+      const currentPlayer = G.players[playerID];
+      const currentPlayerPosition = currentPlayer.position;
+      const currentPlayerName = currentPlayer.name;
+
+      if (currentPlayer.isMoving) {
+        G.tiles[currentPlayerPosition] = null;
+        G.tiles[tileIdx] = currentPlayerName;
+        G.players[playerID].position = tileIdx;
+        currentPlayer.moveTiles -= 1;
+        currentPlayer.hasMoved = true;
+        if (currentPlayer.moveTiles === 0) {
+          currentPlayer.isMoving = false;
+          currentPlayer.hasMoved = true;
+        }
+      }
+    },
+
     attack: ({ G, playerID, random, events }, tileIdx) => {
       const currentPlayer = G.players[playerID];
       const currentPlayerName = currentPlayer.name;
@@ -62,6 +95,10 @@ export const DungeonHopper = {
           currentPlayerName + " attacks " + attackedPlayerName + "..."
         );
         currentPlayer.hasDoneAction = true;
+        if (currentPlayer.isMoving) {
+          currentPlayer.isMoving = false;
+          currentPlayer.hasMoved = true;
+        }
         const attackRoll = getBattleDice(random.D6(currentPlayer.attackDice));
         const defenseRoll = getBattleDice(
           random.D6(attackedPlayer.defenseDice)
@@ -99,46 +136,6 @@ export const DungeonHopper = {
         // return INVALID_MOVE;
       }
     },
-    // rollToAttack: ({ G, playerID }, tileIdx) => {
-    //   const currentPlayer = G.players[playerID];
-    //   const currentPlayerTeam = currentPlayer.team;
-    //   const attackedPlayer = G.players.find(
-    //     (player) => player.position === tileIdx
-    //   );
-    //   const attackedPlayerName = attackedPlayer.name;
-    //   const attackedPlayerTeam = attackedPlayer.team;
-
-    //   if (currentPlayerTeam !== attackedPlayerTeam) {
-    //     attackedPlayer.hitPoints -= currentPlayer.attack;
-    //     console.log(
-    //       `${currentPlayer.name} attacks! ${attackedPlayerName} has ${attackedPlayer.hitPoints} hit points left`
-    //     );
-    //     if (attackedPlayer.hitPoints <= 0) {
-    //       G.tiles[tileIdx] = null;
-    //       attackedPlayer.position = null;
-    //       console.log(`${attackedPlayerName} is dead!`);
-    //     }
-    //   } else {
-    //     console.log("You can't attack your own team!");
-    //     return INVALID_MOVE;
-    //   }
-    // }
-    rollMovementDice: ({ G, ctx, random, events, playerID }) => {
-      const currentPlayer = G.players[playerID];
-      if (currentPlayer.hasMoved) {
-        console.log("You have already moved this turn!");
-        // return INVALID_MOVE;
-      } else {
-        const movementRoll = random.D6(2);
-        const movementTotal = movementRoll[0] + movementRoll[1];
-        currentPlayer.moveTiles = movementTotal;
-        console.log(
-          `${currentPlayer.name} rolled ${movementRoll[0]} and ${movementRoll[1]} for a total of ${movementTotal} movement tiles`
-        );
-        console.log(events);
-        events.setStage("movement");
-      }
-    },
   },
 
   turn: {
@@ -152,26 +149,27 @@ export const DungeonHopper = {
       // currentPlayer.hasMoved = false;
       // currentPlayer.hasDoneAction = false;
     },
-    stages: {
-      movement: {
-        moves: {
-          moveOneSquare: ({ G, events, playerID }, tileIdx) => {
-            const currentPlayer = G.players[playerID];
-            const currentPlayerPosition = currentPlayer.position;
-            const currentPlayerName = currentPlayer.name;
 
-            G.tiles[currentPlayerPosition] = null;
-            G.tiles[tileIdx] = currentPlayerName;
-            G.players[playerID].position = tileIdx;
-            currentPlayer.moveTiles -= 1;
-            currentPlayer.hasMoved = true;
-            if (currentPlayer.moveTiles === 0) {
-              events.endStage();
-            }
-          },
-        },
-      },
-    },
+    // stages: {
+    //   movement: {
+    //     moves: {
+    //       moveOneSquare: ({ G, events, playerID }, tileIdx) => {
+    //         const currentPlayer = G.players[playerID];
+    //         const currentPlayerPosition = currentPlayer.position;
+    //         const currentPlayerName = currentPlayer.name;
+
+    //         G.tiles[currentPlayerPosition] = null;
+    //         G.tiles[tileIdx] = currentPlayerName;
+    //         G.players[playerID].position = tileIdx;
+    //         currentPlayer.moveTiles -= 1;
+    //         currentPlayer.hasMoved = true;
+    //         if (currentPlayer.moveTiles === 0) {
+    //           events.endStage();
+    //         }
+    //       },
+    //     },
+    //   },
+    // },
   },
 };
 

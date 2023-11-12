@@ -14,3 +14,7 @@
 .tile.hovered {
   background-color: #c0c0c0; /* You can customize the color for hovered adjacent tiles */
 }
+
+.tile.opponent {
+  background-color: rgb(225, 188, 188);
+}
