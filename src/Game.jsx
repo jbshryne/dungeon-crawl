@@ -4,7 +4,7 @@ import { calculateMoveTiles, getAdjacentTiles } from "./Board";
 
 const hero = {
   name: "Hero",
-  position: 23,
+  position: 9,
   id: 0,
   attackDice: 3,
   defenseDice: 2,
@@ -50,7 +50,8 @@ export const DungeonHopper = {
         G.tiles.length
       );
       console.log(distance);
-      return distance;
+      console.log(G.ai.play);
+      // return distance;
     },
 
     rollMovementDice: ({ G, ctx, random, events, playerID }) => {
@@ -154,11 +155,14 @@ export const DungeonHopper = {
   },
 
   turn: {
-    onBegin: ({ G }) => {
+    onBegin: ({ G, ctx }) => {
       G.players.forEach((player) => {
         player.hasMoved = false;
         player.hasDoneAction = false;
       });
+
+      const currentPlayer = G.players[ctx.currentPlayer];
+      console.log("Active Team:", currentPlayer.team);
     },
   },
 

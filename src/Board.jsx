@@ -5,10 +5,45 @@ export function Board({ ctx, G, moves }) {
   const boardTiles = G.tiles.length;
   const currentPlayer = G.players[ctx.currentPlayer];
   const currentPosition = currentPlayer.position;
+  const currentPlayerTeam = currentPlayer.team;
+
+  if (currentPlayerTeam === "ENEMY") {
+    console.log("AI is thinking...");
+
+    // console.log(moves);
+    // while (!currentPlayer.hasMoved) {
+    const otherTeam = "HERO";
+    const otherTeamPlayer = G.players.find(
+      (player) => player.team === otherTeam
+    );
+    // console.log(otherTeamPlayer);
+    const otherTeamPosition = otherTeamPlayer.position;
+    // console.log(otherTeamPosition);
+    if (
+      isAdjacentTile(otherTeamPosition, currentPosition, boardTiles) &&
+      !currentPlayer.hasDoneAction
+    ) {
+      moves.attack(otherTeamPosition);
+      // const isAdjacentToOtherTeam = (position) => {
+      //   const adjacentPositions = getAdjacentTiles(position, G.tiles.length);
+      //   return adjacentPositions.some((position) => {
+      //     return otherTeamPositions.includes(position);
+      //   });
+      // };
+
+      // if (isAdjacentToOtherTeam(currentPosition)) {
+      //   otherTeamPositions.forEach((position) => {
+      //     if (isAdjacentTile(position, currentPosition, G.tiles.length)) {
+      //       moves.attack(position);
+      //     }
+      //   });
+      // }
+    }
+  }
 
   const handleKeyPress = (event) => {
     const key = event.key.toLowerCase();
-    console.log(key);
+    // console.log(key);
     const movementKeys = [
       "w",
       "a",
