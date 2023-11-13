@@ -139,3 +139,25 @@ export function isAdjacentTile(newTile, refTile, boardSize) {
     (sameColumn && Math.abs(newTile - refTile) === rowSize) // Same column, adjacent rows
   );
 }
+
+export function getAdjacentTiles(tileIdx, boardSize) {
+  const rowSize = Math.sqrt(boardSize);
+  const sameRow = Math.floor(tileIdx / rowSize);
+  const sameColumn = tileIdx % rowSize;
+  const adjacentTiles = [];
+
+  if (sameRow > 0) {
+    adjacentTiles.push(tileIdx - rowSize);
+  }
+  if (sameRow < rowSize - 1) {
+    adjacentTiles.push(tileIdx + rowSize);
+  }
+  if (sameColumn > 0) {
+    adjacentTiles.push(tileIdx - 1);
+  }
+  if (sameColumn < rowSize - 1) {
+    adjacentTiles.push(tileIdx + 1);
+  }
+
+  return adjacentTiles;
+}

@@ -1,5 +1,6 @@
 // import { INVALID_MOVE } from "boardgame.io/core";
 // import { isAdjacentTile } from "./Board";
+import { getAdjacentTiles, isAdjacentTile } from "./Board";
 
 const hero = {
   name: "Hero",
@@ -47,6 +48,7 @@ export const DungeonHopper = {
       } else if (currentPlayer.hasMoved) {
         console.log("You have already moved this turn!");
       } else {
+        console.log(getAdjacentTiles(currentPlayer.position, G.tiles.length));
         currentPlayer.isMoving = true;
         const movementRoll = random.D6(2);
         const movementTotal = movementRoll[0] + movementRoll[1];
@@ -59,11 +61,12 @@ export const DungeonHopper = {
 
     moveOneSquare: ({ G, events, playerID }, tileIdx) => {
       const currentPlayer = G.players[playerID];
-      const currentPlayerPosition = currentPlayer.position;
+      const currentPosition = currentPlayer.position;
       const currentPlayerName = currentPlayer.name;
 
       if (currentPlayer.isMoving) {
-        G.tiles[currentPlayerPosition] = null;
+        // console.log(getAdjacentTiles(currentPosition, G.tiles.length));
+        G.tiles[currentPosition] = null;
         G.tiles[tileIdx] = currentPlayerName;
         G.players[playerID].position = tileIdx;
         currentPlayer.moveTiles -= 1;
@@ -144,32 +147,102 @@ export const DungeonHopper = {
         player.hasMoved = false;
         player.hasDoneAction = false;
       });
-
-      // console.log(`It is ${currentPlayer.name}'s turn`);
-      // currentPlayer.hasMoved = false;
-      // currentPlayer.hasDoneAction = false;
     },
+  },
 
-    // stages: {
-    //   movement: {
-    //     moves: {
-    //       moveOneSquare: ({ G, events, playerID }, tileIdx) => {
-    //         const currentPlayer = G.players[playerID];
-    //         const currentPlayerPosition = currentPlayer.position;
-    //         const currentPlayerName = currentPlayer.name;
+  endIf: ({ G, ctx }) => {
+    const currentPlayer = G.players[ctx.currentPlayer];
+    const currentTeam = currentPlayer.team;
+    const otherTeam = currentTeam === "HERO" ? "ENEMY" : "HERO";
+    const otherTeamPlayers = G.players.filter(
+      (player) => player.team === otherTeam
+    );
+    const otherTeamHitPoints = otherTeamPlayers.reduce(
+      (total, player) => total + player.hitPoints,
+      0
+    );
+    if (otherTeamHitPoints === 0 && currentPlayer.hasDoneAction) {
+      console.log(`Team ${currentTeam} wins!`);
+      return { winner: currentTeam };
+    }
+  },
 
-    //         G.tiles[currentPlayerPosition] = null;
-    //         G.tiles[tileIdx] = currentPlayerName;
-    //         G.players[playerID].position = tileIdx;
-    //         currentPlayer.moveTiles -= 1;
-    //         currentPlayer.hasMoved = true;
-    //         if (currentPlayer.moveTiles === 0) {
-    //           events.endStage();
-    //         }
-    //       },
-    //     },
-    //   },
-    // },
+  ai: {
+    enumerate: (G, ctx) => {
+      const moves = [];
+      const currentPlayer = G.players[ctx.currentPlayer];
+      const currentPosition = currentPlayer.position;
+      const currentPlayerTeam = currentPlayer.team;
+      const otherTeam = currentPlayerTeam === "HERO" ? "ENEMY" : "HERO";
+      const otherTeamPlayers = G.players.filter(
+        (player) => player.team === otherTeam
+      );
+      const otherTeamPositions = otherTeamPlayers.map(
+        (player) => player.position
+      );
+      // console.log(otherTeamPositions);
+      // const otherTeamAdjacentPositions = otherTeamPositions.reduce(
+      //   (acc, position) => {
+      //     const adjacentPositions = getAdjacentTiles(position);
+      //     return [...acc, ...adjacentPositions];
+      //   },
+      //   []
+      // );
+
+      otherTeamPositions.forEach((position) => {
+        if (isAdjacentTile(position, currentPosition, G.tiles.length)) {
+          moves.push({ move: "attack", args: [position] });
+        }
+      });
+
+      // if (otherTeamAdjacentPositions.includes(currentPosition)) {
+      //   console.log("In attack position!");
+      //   moves.push({ move: "attack", args: [currentPosition] });
+      // }
+
+      // getAdjacentTiles(currentPosition, G.tiles.length).forEach((tileIdx) => {
+      //   if (
+      //     G.tiles[tileIdx].team &&
+      //     G.tiles[tileIdx].team === otherTeam &&
+      //     !currentPlayer.hasDoneAction
+      //   ) {
+      //     moves.push({ move: "attack", args: [tileIdx] });
+      //   }
+      // });
+
+      if (!currentPlayer.isMoving && !currentPlayer.hasMoved) {
+        moves.push({ move: "rollMovementDice" });
+      } else if (currentPlayer.isMoving) {
+        const possibleMoves = getAdjacentTiles(currentPosition, G.tiles.length);
+        possibleMoves.forEach((tileIdx) => {
+          if (G.tiles[tileIdx] === null) {
+            moves.push({ move: "moveOneSquare", args: [tileIdx] });
+          }
+        });
+      }
+
+      //     if (currentPlayer.isMoving) {
+      //       const possibleMoves = getAdjacentTiles(currentPosition);
+      //       possibleMoves.forEach((tileIdx) => {
+      //         if (G.tiles[tileIdx] === null) {
+      //           moves.push({ move: "moveOneSquare", args: [tileIdx] });
+      //         }
+      //       });
+      //     } else if (!currentPlayer.hasMoved) {
+      //       const possibleMoves = getAdjacentTiles(currentPosition);
+      //       possibleMoves.forEach((tileIdx) => {
+      //         if (G.tiles[tileIdx] === null) {
+      //           moves.push({ move: "moveOneSquare", args: [tileIdx] });
+      //         }
+      //       });
+      //     }
+      //     if (!currentPlayer.hasDoneAction ) {
+      //       otherTeamAdjacentPositions.forEach((tileIdx) => {
+      //         moves.push({ move: "attack", args: [tileIdx] });
+      //       });
+      //     }
+      return moves;
+    },
   },
 };
 
