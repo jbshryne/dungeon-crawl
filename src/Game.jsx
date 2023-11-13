@@ -1,10 +1,10 @@
 // import { INVALID_MOVE } from "boardgame.io/core";
 // import { isAdjacentTile } from "./Board";
-import { getAdjacentTiles, isAdjacentTile } from "./Board";
+import { calculateMoveTiles, getAdjacentTiles } from "./Board";
 
 const hero = {
   name: "Hero",
-  position: 22,
+  position: 23,
   id: 0,
   attackDice: 3,
   defenseDice: 2,
@@ -41,6 +41,18 @@ export const DungeonHopper = {
   }),
 
   moves: {
+    getDistance: ({ G, ctx }, tileIdx) => {
+      const currentPlayer = G.players[ctx.currentPlayer];
+      const currentPosition = currentPlayer.position;
+      const distance = calculateMoveTiles(
+        currentPosition,
+        tileIdx,
+        G.tiles.length
+      );
+      console.log(distance);
+      return distance;
+    },
+
     rollMovementDice: ({ G, ctx, random, events, playerID }) => {
       const currentPlayer = G.players[playerID];
       if (currentPlayer.isMoving) {
@@ -167,80 +179,117 @@ export const DungeonHopper = {
     }
   },
 
+  // ai: {
+  //   enumerate: (G, ctx) => {
+  //     const moves = [];
+
+  //     const currentPlayer = G.players[ctx.currentPlayer];
+  //     const currentPosition = currentPlayer.position;
+  //     const currentPlayerTeam = currentPlayer.team;
+
+  //     const otherTeam = currentPlayerTeam === "HERO" ? "ENEMY" : "HERO";
+  //     const otherTeamPlayers = G.players.filter(
+  //       (player) => player.team === otherTeam
+  //     );
+  //     const otherTeamPositions = otherTeamPlayers.map(
+  //       (player) => player.position
+  //     );
+  //     const isAdjacentToOtherTeam = (position) => {
+  //       const adjacentPositions = getAdjacentTiles(position, G.tiles.length);
+  //       return adjacentPositions.some((position) => {
+  //         return otherTeamPositions.includes(position);
+  //       });
+  //     };
+
+  //     if (isAdjacentToOtherTeam(currentPosition)) {
+  //       otherTeamPositions.forEach((position) => {
+  //         if (isAdjacentTile(position, currentPosition, G.tiles.length)) {
+  //           moves.push({ move: "attack", args: [position] });
+  //         }
+  //       });
+  //     } else {
+  //       if (!currentPlayer.isMoving && !currentPlayer.hasMoved) {
+  //         moves.push({ move: "rollMovementDice" });
+  //       } else if (currentPlayer.isMoving) {
+  //         const possibleMoves = getAdjacentTiles(
+  //           currentPosition,
+  //           G.tiles.length
+  //         );
+  //         possibleMoves.forEach((tileIdx) => {
+  //           if (G.tiles[tileIdx] === null) {
+  //             moves.push({ move: "moveOneSquare", args: [tileIdx] });
+  //           }
+  //         });
+  //       }
+  //     }
+  //     return moves;
+  //   },
+  // },
+
   ai: {
     enumerate: (G, ctx) => {
       const moves = [];
       const currentPlayer = G.players[ctx.currentPlayer];
       const currentPosition = currentPlayer.position;
       const currentPlayerTeam = currentPlayer.team;
+
       const otherTeam = currentPlayerTeam === "HERO" ? "ENEMY" : "HERO";
       const otherTeamPlayers = G.players.filter(
         (player) => player.team === otherTeam
       );
-      const otherTeamPositions = otherTeamPlayers.map(
-        (player) => player.position
-      );
-      // console.log(otherTeamPositions);
-      // const otherTeamAdjacentPositions = otherTeamPositions.reduce(
-      //   (acc, position) => {
-      //     const adjacentPositions = getAdjacentTiles(position);
-      //     return [...acc, ...adjacentPositions];
-      //   },
-      //   []
-      // );
 
-      otherTeamPositions.forEach((position) => {
-        if (isAdjacentTile(position, currentPosition, G.tiles.length)) {
-          moves.push({ move: "attack", args: [position] });
+      // If there are no enemies left, AI can only move
+      if (otherTeamPlayers.length === 0) {
+        moves.push({ move: "rollMovementDice" });
+        return moves;
+      }
+
+      let minDistance = Infinity;
+      let closestEnemy = null;
+
+      // Find the closest enemy
+      otherTeamPlayers.forEach((enemy) => {
+        const distance = calculateMoveTiles(
+          currentPosition,
+          enemy.position,
+          G.tiles.length
+        );
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestEnemy = enemy;
         }
       });
 
-      // if (otherTeamAdjacentPositions.includes(currentPosition)) {
-      //   console.log("In attack position!");
-      //   moves.push({ move: "attack", args: [currentPosition] });
-      // }
+      const adjacentTiles = getAdjacentTiles(currentPosition, G.tiles.length);
 
-      // getAdjacentTiles(currentPosition, G.tiles.length).forEach((tileIdx) => {
-      //   if (
-      //     G.tiles[tileIdx].team &&
-      //     G.tiles[tileIdx].team === otherTeam &&
-      //     !currentPlayer.hasDoneAction
-      //   ) {
-      //     moves.push({ move: "attack", args: [tileIdx] });
-      //   }
-      // });
+      // Calculate the distance from each adjacent tile to the close enemy
+      adjacentTiles.forEach((adjacentTile) => {
+        const distance = calculateMoveTiles(
+          adjacentTile,
+          closestEnemy.position,
+          G.tiles.length
+        );
 
-      if (!currentPlayer.isMoving && !currentPlayer.hasMoved) {
-        moves.push({ move: "rollMovementDice" });
-      } else if (currentPlayer.isMoving) {
-        const possibleMoves = getAdjacentTiles(currentPosition, G.tiles.length);
-        possibleMoves.forEach((tileIdx) => {
-          if (G.tiles[tileIdx] === null) {
-            moves.push({ move: "moveOneSquare", args: [tileIdx] });
-          }
-        });
+        // If the distance is less than the current distance, move to that tile
+        if (
+          distance < minDistance &&
+          G.tiles[adjacentTile] === null &&
+          currentPlayer.isMoving
+        ) {
+          moves.push({ move: "moveOneSquare", args: [adjacentTile] });
+        }
+      });
+
+      // If AI is next to the enemy, it should attack
+      if (minDistance === 1) {
+        moves.push({ move: "attack", args: [closestEnemy.position] });
       }
 
-      //     if (currentPlayer.isMoving) {
-      //       const possibleMoves = getAdjacentTiles(currentPosition);
-      //       possibleMoves.forEach((tileIdx) => {
-      //         if (G.tiles[tileIdx] === null) {
-      //           moves.push({ move: "moveOneSquare", args: [tileIdx] });
-      //         }
-      //       });
-      //     } else if (!currentPlayer.hasMoved) {
-      //       const possibleMoves = getAdjacentTiles(currentPosition);
-      //       possibleMoves.forEach((tileIdx) => {
-      //         if (G.tiles[tileIdx] === null) {
-      //           moves.push({ move: "moveOneSquare", args: [tileIdx] });
-      //         }
-      //       });
-      //     }
-      //     if (!currentPlayer.hasDoneAction ) {
-      //       otherTeamAdjacentPositions.forEach((tileIdx) => {
-      //         moves.push({ move: "attack", args: [tileIdx] });
-      //       });
-      //     }
+      // If the AI can't do any of the above, then it should roll the movement dice
+      if (moves.length === 0) {
+        moves.push({ move: "rollMovementDice" });
+      }
+
       return moves;
     },
   },

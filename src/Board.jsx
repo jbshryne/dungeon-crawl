@@ -161,3 +161,19 @@ export function getAdjacentTiles(tileIdx, boardSize) {
 
   return adjacentTiles;
 }
+
+export function calculateMoveTiles(startTile, targetTile, boardSize) {
+  const rowSize = Math.sqrt(boardSize);
+
+  // Get the x, y coordinates of the start and target tiles
+  const start = { x: Math.floor(startTile / rowSize), y: startTile % rowSize };
+  const target = {
+    x: Math.floor(targetTile / rowSize),
+    y: targetTile % rowSize,
+  };
+
+  // Calculate the Manhattan distance
+  const distance = Math.abs(start.x - target.x) + Math.abs(start.y - target.y);
+
+  return distance;
+}
