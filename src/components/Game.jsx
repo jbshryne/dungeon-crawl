@@ -1,5 +1,4 @@
 // import { INVALID_MOVE } from "boardgame.io/core";
-// import { isAdjacentTile } from "./Board";
 import { calculateMoveTiles, getAdjacentTiles } from "./Board";
 
 const hero = {
@@ -191,7 +190,7 @@ export const DungeonHopper = {
   //     const currentPosition = currentPlayer.position;
   //     const currentPlayerTeam = currentPlayer.team;
 
-  //     const otherTeam = currentPlayerTeam === "HERO" ? "ENEMY" : "HERO";
+  //     const otherTeam = "HERO"
   //     const otherTeamPlayers = G.players.filter(
   //       (player) => player.team === otherTeam
   //     );

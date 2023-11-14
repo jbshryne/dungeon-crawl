@@ -1,8 +1,13 @@
-import { Client } from "boardgame.io/react";
-import { DungeonHopper } from "./Game";
-import { Board } from "./Board";
+import { Outlet } from "react-router-dom";
 import "./App.css";
 
-const App = Client({ game: DungeonHopper, board: Board });
+function App() {
+  // We will use the Route component to specify each route
+  return (
+    <div className="App">
+      <Outlet />
+    </div>
+  );
+}
 
 export default App;
