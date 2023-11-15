@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -19,7 +22,7 @@ const Login = () => {
     event.preventDefault();
     console.log("Login");
 
-    const response = await fetch("http://localhost:3600/login", {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -34,7 +37,8 @@ const Login = () => {
       const data = await response.json();
 
       if (data.username) {
-        localStorage.setItem("currentUser", data);
+        localStorage.setItem("currentUser", JSON.stringify(data));
+        navigate("/game");
       }
     }
   };

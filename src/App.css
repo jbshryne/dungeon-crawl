@@ -1,3 +1,12 @@
+#board {
+  /* display: flex;
+  flex-wrap: wrap; */
+  /* width: 500px;
+  height: 500px; */
+  margin: 10vh auto;
+  border: 1px solid black;
+}
+
 .tile {
   border: 1px solid gray;
   width: 50px;
