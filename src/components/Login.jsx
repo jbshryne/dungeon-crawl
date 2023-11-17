@@ -44,13 +44,21 @@ const Login = () => {
   };
 
   return (
-    <div>
+    <div className="auth-component">
       <h1>Login</h1>
       <form onSubmit={handleLogin}>
-        <label htmlFor="username">Username: </label>
-        <input type="text" name="username" onChange={handleInputChange} />
-        <label htmlFor="password">Password: </label>
-        <input type="password" name="password" onChange={handleInputChange} />
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          onChange={handleInputChange}
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          onChange={handleInputChange}
+        />
         <button type="submit">Login</button>
       </form>
     </div>

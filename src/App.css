@@ -1,17 +1,87 @@
-#board-display {
+a {
+  /* text-decoration: none; */
+  color: white;
+}
+
+#landing-page {
+  /* background-color: rgb(221, 196, 162); */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* justify-content: center; */
+  height: 95vh;
+  width: 100vw;
+}
+
+#hero-image {
+  height: 600px;
+}
+
+.auth-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* justify-content: center; */
+  height: 95vh;
+  width: 100vw;
+}
+
+.auth-component {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  width: 700px;
+  height: 200px;
+  color: white;
+  background-color: rgba(211, 211, 210, 0.2);
+}
+
+.nav-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: 50px;
+  width: 100%;
+  background-color: rgba(211, 211, 210, 0.2);
+}
+
+.nav-bar-item {
+  text-decoration: none;
+  color: white;
+  font-size: 18px;
+  padding: 0 6px;
+}
+
+.rules-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* justify-content: center; */
+  height: 95vh;
+  width: 100vw;
+}
+
+.rules-page p {
+  width: 90vw;
+  font-size: 18px;
+  line-height: 1.5;
+  text-align: left;
 }
 
 .play-screen {
   display: flex;
   flex-direction: row;
+}
+
+#board-display {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 100vh;
+  /* justify-content: center; */
+  height: 95vh;
+  width: 100vw;
 }
 
 .player-panel {
@@ -19,9 +89,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 30vw;
-  height: 50vh;
-  background-color: #f0f0f0;
+  width: 400px;
+  height: 400px;
+  color: white;
+  background-color: rgba(211, 211, 210, 0.2);
+}
+
+.player-panel.active {
+  background-color: rgba(211, 211, 210, 0.4);
 }
 
 #board {
@@ -30,7 +105,7 @@
   /* width: 500px;
   height: 500px; */
   /* margin: 0 auto; */
-  border: 1px solid black;
+  border: 1px solid rgb(191, 191, 191);
 }
 
 .tile {
@@ -44,11 +119,11 @@
 
 /* .tile:hover, */
 .tile.adjacent {
-  background-color: #f0f0f0;
+  background-color: rgb(151, 115, 115);
 }
 
 .tile.hovered {
-  background-color: #c0c0c0; /* You can customize the color for hovered adjacent tiles */
+  background-color: rgb(171, 171, 144);
 }
 
 .tile.opponent {
@@ -60,9 +135,12 @@
 }
 
 .board-icon {
-  color: white;
-  font-size: 36px;
   padding-top: 6px;
+}
+
+.player-icon {
+  font-size: 40px;
+  color: white;
 }
 
 .box-icon {
@@ -71,14 +149,29 @@
   padding-top: 6px;
 }
 
+.player-stats th {
+  /* border: 1px solid rgb(0, 0, 0); */
+  padding: 0;
+  width: 60px;
+}
+
+.player-stats td {
+  border: 1px solid rgba(219, 214, 214, 0.354);
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  padding: 0;
+  height: 40px;
+}
+
 .movement-die-container {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  width: 30vw;
+  width: 200px;
   height: 50vh;
-  background-color: #f0f0f0;
+  /* background-color: #f0f0f0; */
 }
 
 .battle-die-container {
@@ -88,7 +181,7 @@
   justify-content: center;
   width: 30vw;
   height: 50vh;
-  background-color: #f0f0f0;
+  /* background-color: #f0f0f0; */
 }
 
 .movement-die {
@@ -108,4 +201,10 @@
   border-radius: 5px;
   width: 40px;
   height: 40px;
+  color: black;
+  background-color: #f0f0f0;
+}
+
+.battle-die.failure {
+  opacity: 0.5;
 }

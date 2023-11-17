@@ -54,17 +54,25 @@ const Signup = () => {
   };
 
   return (
-    <div>
+    <div className="auth-component">
       <h1>Signup</h1>
       <form onSubmit={handleSignup}>
-        <label htmlFor="username">Username: </label>
-        <input type="text" name="username" onChange={handleInputChange} />
-        <label htmlFor="password">Password: </label>
-        <input type="password" name="password" onChange={handleInputChange} />
-        <label htmlFor="confirmPassword">Confirm Password: </label>
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          onChange={handleInputChange}
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          onChange={handleInputChange}
+        />
         <input
           type="password"
           name="confirmPassword"
+          placeholder="Confirm Password"
           onChange={handleInputChange}
         />
         <button type="submit">Signup</button>

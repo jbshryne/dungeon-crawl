@@ -24,7 +24,7 @@ const monster = {
   name: "Monster",
   type: "PLAYER",
   team: "Monster",
-  position: 57,
+  position: 24,
   attackDice: 3,
   attackBoost: 0,
   defenseDice: 2,
@@ -248,9 +248,6 @@ export const DungeonThrowdown = {
       currentPlayer.hasMoved = false;
       currentPlayer.hasDoneAction = false;
 
-      G.battleDice.p1 = [];
-      G.battleDice.p2 = [];
-
       const movementRoll = random.D6(2);
       const movementTotal = movementRoll[0] + movementRoll[1];
       currentPlayer.moveTiles = movementTotal;
@@ -258,8 +255,6 @@ export const DungeonThrowdown = {
         `${currentPlayer.name} rolled ${movementRoll[0]} and ${movementRoll[1]} for a total of ${movementTotal} movement tiles`
       );
       G.movementDice = movementRoll;
-
-      console.log("Active Team:", currentPlayer.team);
 
       const occupiedTiles = G.tiles.map((tile, idx) => {
         if (tile !== null) {

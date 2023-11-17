@@ -1,10 +1,32 @@
-import { Outlet } from "react-router-dom";
+// import { Outlet } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
+import NavBar from "./components/NavBar";
+import AuthChecker from "./components/AuthChecker";
+import Home from "./pages/Home";
+import Auth from "./pages/Auth";
+import Client from "./pages/Client";
+import Rules from "./pages/Rules";
 
 function App() {
   return (
     <div className="App">
-      <Outlet />
+      <NavBar />
+      <main>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/rules" element={<Rules />} />
+          <Route
+            path="/game"
+            element={
+              <AuthChecker>
+                <Client />
+              </AuthChecker>
+            }
+          />
+        </Routes>
+      </main>
     </div>
   );
 }

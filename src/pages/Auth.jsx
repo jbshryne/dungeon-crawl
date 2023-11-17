@@ -23,7 +23,7 @@ const Auth = () => {
   };
 
   return (
-    <div>
+    <div className="auth-page">
       {isLoggedIn ? (
         <>
           <p>You are currently signed in as {currentUser.username}</p>
@@ -31,15 +31,22 @@ const Auth = () => {
         </>
       ) : (
         <>
-          <button onClick={handleComponentChange} name="login">
-            Sign In
-          </button>
-          <button onClick={handleComponentChange} name="signup">
-            Create a New Account
-          </button>
+          <section>
+            <button onClick={handleComponentChange} name="login">
+              Sign In
+            </button>
+            <button onClick={handleComponentChange} name="signup">
+              Create a New Account
+            </button>
+          </section>
           {component}
         </>
       )}
+      <img
+        style={{ width: 500 }}
+        src="/assets/dungeon-throwdown 01.png"
+        alt="female warrior fighting reptile"
+      />
     </div>
   );
 };

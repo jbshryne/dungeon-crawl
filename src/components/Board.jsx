@@ -9,6 +9,7 @@ import {
   GiDiceSixFacesFour,
   GiDiceSixFacesFive,
   GiDiceSixFacesSix,
+  GiCheckMark,
 } from "react-icons/gi";
 import { GiChest } from "react-icons/gi";
 
@@ -176,28 +177,37 @@ export function Board({ ctx, G, moves, events }) {
     const attackDice = player.attackDice + player.attackBoost;
     const defenseDice = player.defenseDice + player.defenseBoost;
     const movement = player.moveTiles;
+    const action = player.hasDoneAction;
     const powerup = player.powerup;
     const isCurrentPlayer = currentPlayer.name === name;
 
     return (
-      <div className="player-panel">
+      <div className={`player-panel ${isCurrentPlayer && "active"}`}>
         {status}
         <br />
-        <p>{name}</p>
         <div className="movement-die-container">
           {isCurrentPlayer && renderMovementRoll(movementDice)}
         </div>
-        <br />
-        Hit Points: {hitPoints}
-        <br />
-        Attack Dice: {attackDice}
-        <br />
-        Defense Dice: {defenseDice}
-        <br />
-        Moves Left: {movement}
-        <br />
+        <p>{name}</p>
+        <table className="player-stats">
+          <thead>
+            <th>Moves Left</th>
+            <th>Action Taken</th>
+            <th>Attack Dice</th>
+            <th>Defense Dice</th>
+            <th>Hit Points</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{movement}</td>
+              <td>{action ? <GiCheckMark style={{ size: 36 }} /> : ""}</td>
+              <td>{attackDice}</td>
+              <td>{defenseDice}</td>
+              <td>{hitPoints}</td>
+            </tr>
+          </tbody>
+        </table>
         Powerup: {powerup ? powerup.name : "None"}
-        <br />
         {powerup && powerup.type === "ATK" && (
           <i>(+{powerup.amount} to Attack Dice)</i>
         )}
@@ -205,7 +215,7 @@ export function Board({ ctx, G, moves, events }) {
           <i>(+{powerup.amount} to Defense Dice)</i>
         )}
         <div className="battle-die-container">
-          {renderBattleRoll(battleDice)}
+          {renderBattleRoll(battleDice, isCurrentPlayer)}
         </div>
         <button
           onClick={() => events.endTurn()}
@@ -293,7 +303,6 @@ export function calculateMoveTiles(startTile, targetTile, boardSize) {
 }
 
 function renderMovementRoll(roll) {
-  console.log(roll);
   return roll.map((die, idx) => {
     if (die === 1) {
       return <GiDiceSixFacesOne key={idx} className="movement-die" />;
@@ -316,9 +325,9 @@ function renderMovementRoll(roll) {
   });
 }
 
-function renderBattleRoll(roll) {
+function renderBattleRoll(roll, isAttacking) {
   // console.log(roll);
   return roll.map((die, idx) => {
-    return <BattleDie key={idx} result={die} />;
+    return <BattleDie key={idx} result={die} isAttacking={isAttacking} />;
   });
 }

@@ -10,6 +10,7 @@ import React, { useState, useEffect } from "react";
 import { Client } from "boardgame.io/react";
 import { DungeonThrowdown } from "../components/Game";
 import { Board } from "../components/Board";
+import NavBar from "../components/NavBar";
 
 const BoardGame = Client({
   game: DungeonThrowdown,
@@ -26,6 +27,7 @@ function BoardDisplay({ G, ctx, moves, events }) {
 
   return (
     <div id="board-display">
+      {/* <NavBar /> */}
       <p className="game-message">{gameMessage}</p>
       <Board G={G} ctx={ctx} moves={moves} events={events} />
     </div>
