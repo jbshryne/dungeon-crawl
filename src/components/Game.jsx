@@ -1,12 +1,12 @@
 // import { INVALID_MOVE } from "boardgame.io/core";
-import { calculateMoveTiles, getAdjacentTiles } from "./Board";
+import { calculateMoveTiles } from "./Board";
 
 const hero = {
   id: 0,
-  name: "Hero",
+  name: "Quester",
   type: "PLAYER",
-  team: "HERO",
-  position: 27,
+  team: "Quester",
+  position: 56,
   attackDice: 3,
   attackBoost: 0,
   defenseDice: 2,
@@ -21,10 +21,10 @@ const hero = {
 
 const monster = {
   id: 1,
-  name: "Gobbo",
+  name: "Monster",
   type: "PLAYER",
-  team: "MONSTER",
-  position: 28,
+  team: "Monster",
+  position: 57,
   attackDice: 3,
   attackBoost: 0,
   defenseDice: 2,
@@ -39,22 +39,34 @@ const monster = {
 
 const players = [hero, monster];
 
+const occupiedTiles = players.map((player) => player.position);
+
 const startingBoxes = [
-  { position: boxStartPosition(players), type: "BOX" },
-  { position: boxStartPosition(players), type: "BOX" },
-  { position: boxStartPosition(players), type: "BOX" },
+  { position: boxPosition(occupiedTiles), type: "BOX" },
+  { position: boxPosition(occupiedTiles), type: "BOX" },
+  { position: boxPosition(occupiedTiles), type: "BOX" },
 ];
 
-export const DungeonHopper = {
+export const DungeonThrowdown = {
   setup: () => ({
-    tiles: Array(64)
+    tiles: Array(81)
       .fill(null)
-      .fill("box", startingBoxes[0].position, startingBoxes[0].position + 1)
-      .fill("box", startingBoxes[1].position, startingBoxes[1].position + 1)
-      .fill("box", startingBoxes[2].position, startingBoxes[2].position + 1)
-      .fill(hero.name, hero.position, hero.position + 1)
-      .fill(monster.name, monster.position, monster.position + 1),
+      .fill("BOX", startingBoxes[0].position, startingBoxes[0].position + 1)
+      .fill("BOX", startingBoxes[1].position, startingBoxes[1].position + 1)
+      .fill("BOX", startingBoxes[2].position, startingBoxes[2].position + 1)
+      .fill(hero.team, hero.position, hero.position + 1)
+      .fill(monster.team, monster.position, monster.position + 1),
     players,
+    messages: {
+      game: "",
+      p1: "",
+      p2: "",
+    },
+    movementDice: [],
+    battleDice: {
+      p1: [],
+      p2: [],
+    },
   }),
 
   moves: {
@@ -69,45 +81,28 @@ export const DungeonHopper = {
       console.log(distance);
     },
 
-    rollMovementDice: ({ G, ctx, random, events, playerID }) => {
-      const currentPlayer = G.players[playerID];
-      if (currentPlayer.isMoving) {
-        console.log("You are already moving!");
-      } else if (currentPlayer.hasMoved) {
-        console.log("You have already moved this turn!");
-      } else {
-        console.log(getAdjacentTiles(currentPlayer.position, G.tiles.length));
-        currentPlayer.isMoving = true;
-        const movementRoll = random.D6(2);
-        const movementTotal = movementRoll[0] + movementRoll[1];
-        currentPlayer.moveTiles = movementTotal;
-        console.log(
-          `${currentPlayer.name} rolled ${movementRoll[0]} and ${movementRoll[1]} for a total of ${movementTotal} movement tiles`
-        );
-      }
-    },
-
     moveOneSquare: ({ G, events, playerID }, tileIdx) => {
       const currentPlayer = G.players[playerID];
       const currentPosition = currentPlayer.position;
       const currentPlayerName = currentPlayer.name;
 
-      if (currentPlayer.isMoving) {
-        // console.log(getAdjacentTiles(currentPosition, G.tiles.length));
+      // console.log(getAdjacentTiles(currentPosition, G.tiles.length));
+      if (currentPlayer.moveTiles > 0) {
         G.tiles[currentPosition] = null;
         G.tiles[tileIdx] = currentPlayerName;
         G.players[playerID].position = tileIdx;
         currentPlayer.moveTiles -= 1;
+        currentPlayer.isMoving = true;
+      }
+      if (currentPlayer.moveTiles === 0) {
+        currentPlayer.isMoving = false;
         currentPlayer.hasMoved = true;
-        if (currentPlayer.moveTiles === 0) {
-          currentPlayer.isMoving = false;
-          currentPlayer.hasMoved = true;
-        }
       }
     },
 
-    attack: ({ G, playerID, random, events }, tileIdx) => {
+    attack: ({ G, playerID, random }, tileIdx) => {
       const currentPlayer = G.players[playerID];
+      const isPlayer1 = playerID === "0";
       const currentPlayerName = currentPlayer.name;
       const currentPlayerTeam = currentPlayer.team;
       const attackedPlayer = G.players.find(
@@ -127,22 +122,28 @@ export const DungeonHopper = {
           currentPlayerName + " attacks " + attackedPlayerName + "..."
         );
         currentPlayer.hasDoneAction = true;
-        if (currentPlayer.isMoving) {
-          currentPlayer.isMoving = false;
-          currentPlayer.hasMoved = true;
-        }
         const attackRoll = getBattleRoll(
           random.D6(currentPlayer.attackDice + currentPlayer.attackBoost)
         );
         const defenseRoll = getBattleRoll(
           random.D6(attackedPlayer.defenseDice + attackedPlayer.defenseBoost)
         );
+
         const attackTotal = attackRoll.filter((die) => die === "atk").length;
         const defenseTotal = defenseRoll.filter((die) => die === "def").length;
 
-        // attackedPlayer.hitPoints -= attackTotal - defenseTotal;
         console.log("Attack roll:", attackRoll, "successes:", attackTotal);
+        if (isPlayer1) {
+          G.battleDice.p1 = attackRoll;
+        } else {
+          G.battleDice.p2 = attackRoll;
+        }
         console.log("Defense roll:", defenseRoll, "successes:", defenseTotal);
+        if (isPlayer1) {
+          G.battleDice.p2 = defenseRoll;
+        } else {
+          G.battleDice.p1 = defenseRoll;
+        }
 
         if (attackTotal - defenseTotal > 0) {
           attackedPlayer.hitPoints -= attackTotal - defenseTotal;
@@ -170,30 +171,44 @@ export const DungeonHopper = {
         }
       } else if (currentPlayerTeam === attackedPlayerTeam) {
         console.log("You can't attack your own team!");
-        // return INVALID_MOVE;
       } else if (currentPlayer.hasDoneAction) {
         console.log("You have already performed an action this turn!");
-        // return INVALID_MOVE;
+      }
+      if (currentPlayer.isMoving) {
+        currentPlayer.isMoving = false;
+        currentPlayer.hasMoved = true;
       }
     },
     openBox: ({ G, playerID, random }, tileIdx) => {
       const currentPlayer = G.players[playerID];
       const currentPlayerName = currentPlayer.name;
-      // const currentPlayerTeam = currentPlayer.team;
+      const currentPlayerTeam = currentPlayer.team;
+      const opponent = G.players.find(
+        (player) => player.team !== currentPlayerTeam
+      );
       const box = G.tiles[tileIdx];
 
-      if (box === "box") {
+      if (box === "BOX" && !currentPlayer.hasDoneAction) {
+        if (currentPlayer.isMoving) {
+          currentPlayer.isMoving = false;
+          currentPlayer.hasMoved = true;
+        }
         console.log(currentPlayerName + " opens the box...");
         currentPlayer.hasDoneAction = true;
         G.tiles[tileIdx] = null;
-        const boxRoll = random.D10(1);
+        const boxRoll = random.D12(1);
         const boxRollResult = getBoxRoll(boxRoll[0]);
 
         if (boxRollResult) {
           if (boxRollResult.type === "HP") {
-            currentPlayer.hitPoints += boxRollResult.boost;
+            currentPlayer.hitPoints += boxRollResult.amount;
             console.log(
-              `${currentPlayerName} found a ${boxRollResult.name} and gained ${boxRollResult.boost} hit point(s)!`
+              `${currentPlayerName} finds a ${boxRollResult.name} and gains ${boxRollResult.amount} hit point!`
+            );
+          } else if (boxRollResult.type === "DMG") {
+            opponent.hitPoints -= boxRollResult.amount;
+            console.log(
+              `${currentPlayerName} finds a ${boxRollResult.name} -- ${opponent.name} is struck and loses ${boxRollResult.amount} hit point!`
             );
           } else if (boxRollResult.type === "ATK") {
             currentPlayer.powerup = boxRollResult;
@@ -201,9 +216,9 @@ export const DungeonHopper = {
             currentPlayer.attackBoost = 0;
             currentPlayer.defenseBoost = 0;
 
-            currentPlayer.attackBoost += boxRollResult.boost;
+            currentPlayer.attackBoost += boxRollResult.amount;
             console.log(
-              `${currentPlayerName} found ${boxRollResult.name} and gained ${boxRollResult.boost} attack dice!`
+              `${currentPlayerName} finds a ${boxRollResult.name} and adds ${boxRollResult.amount} to attack dice!`
             );
           } else if (boxRollResult.type === "DEF") {
             currentPlayer.powerup = boxRollResult;
@@ -211,37 +226,85 @@ export const DungeonHopper = {
             currentPlayer.attackBoost = 0;
             currentPlayer.defenseBoost = 0;
 
-            currentPlayer.defenseBoost += boxRollResult.boost;
+            currentPlayer.defenseBoost += boxRollResult.amount;
             console.log(
-              `${currentPlayerName} found ${boxRollResult.name} and gained ${boxRollResult.boost} defense dice!`
+              `${currentPlayerName} finds a ${boxRollResult.name} and adds ${boxRollResult.amount} to defense dice!`
             );
           }
         } else {
-          console.log("The box was empty!");
+          console.log("The box is empty!");
         }
       } else {
-        console.log("There is no box here!");
+        console.log("Can't do that right now!");
       }
     },
   },
 
   turn: {
-    onBegin: ({ G, ctx }) => {
-      G.players.forEach((player) => {
-        player.hasMoved = false;
-        player.isMoving = false;
-        player.hasDoneAction = false;
+    onBegin: ({ G, ctx, random }) => {
+      const currentPlayer = G.players[ctx.currentPlayer];
+      G.messages.game = `${currentPlayer.name}'s turn`;
+      currentPlayer.isMoving = false;
+      currentPlayer.hasMoved = false;
+      currentPlayer.hasDoneAction = false;
+
+      G.battleDice.p1 = [];
+      G.battleDice.p2 = [];
+
+      const movementRoll = random.D6(2);
+      const movementTotal = movementRoll[0] + movementRoll[1];
+      currentPlayer.moveTiles = movementTotal;
+      console.log(
+        `${currentPlayer.name} rolled ${movementRoll[0]} and ${movementRoll[1]} for a total of ${movementTotal} movement tiles`
+      );
+      G.movementDice = movementRoll;
+
+      console.log("Active Team:", currentPlayer.team);
+
+      const occupiedTiles = G.tiles.map((tile, idx) => {
+        if (tile !== null) {
+          return idx;
+        }
       });
 
+      const rollForNewBox = random.D8(1);
+      if (
+        rollForNewBox[0] === 1 ||
+        rollForNewBox[0] === 2 ||
+        rollForNewBox[0] === 3
+      ) {
+        const newBox = { position: boxPosition(occupiedTiles), type: "BOX" };
+        G.tiles[newBox.position] = newBox.type;
+      }
+    },
+
+    onEnd: ({ G, ctx }) => {
       const currentPlayer = G.players[ctx.currentPlayer];
-      console.log("Active Team:", currentPlayer.team);
+      if (currentPlayer.isMoving) {
+        currentPlayer.isMoving = false;
+        currentPlayer.hasMoved = true;
+      }
+    },
+
+    endIf: ({ G, ctx }) => {
+      const currentPlayer = G.players[ctx.currentPlayer];
+      return (
+        !currentPlayer.isMoving &&
+        currentPlayer.hasMoved &&
+        currentPlayer.hasDoneAction
+        // || (
+        //   !currentPlayer.isMoving &&
+        //   currentPlayer.hasMoved &&
+        //   getAdjacentTiles(currentPlayer.position, G.tiles.length).length === 0
+        // )
+      );
     },
   },
 
   endIf: ({ G, ctx }) => {
     const currentPlayer = G.players[ctx.currentPlayer];
     const currentTeam = currentPlayer.team;
-    const otherTeam = currentTeam === "HERO" ? "MONSTER" : "HERO";
+    const otherTeam = currentTeam === "Quester" ? "Monster" : "Quester";
     const otherTeamPlayers = G.players.filter(
       (player) => player.team === otherTeam
     );
@@ -254,124 +317,9 @@ export const DungeonHopper = {
       return { winner: currentTeam };
     }
   },
-
-  // ai: {
-  //   enumerate: (G, ctx) => {
-  //     const moves = [];
-
-  //     const currentPlayer = G.players[ctx.currentPlayer];
-  //     const currentPosition = currentPlayer.position;
-  //     const currentPlayerTeam = currentPlayer.team;
-
-  //     const otherTeam = "HERO"
-  //     const otherTeamPlayers = G.players.filter(
-  //       (player) => player.team === otherTeam
-  //     );
-  //     const otherTeamPositions = otherTeamPlayers.map(
-  //       (player) => player.position
-  //     );
-  //     const isAdjacentToOtherTeam = (position) => {
-  //       const adjacentPositions = getAdjacentTiles(position, G.tiles.length);
-  //       return adjacentPositions.some((position) => {
-  //         return otherTeamPositions.includes(position);
-  //       });
-  //     };
-
-  //     if (isAdjacentToOtherTeam(currentPosition)) {
-  //       otherTeamPositions.forEach((position) => {
-  //         if (isAdjacentTile(position, currentPosition, G.tiles.length)) {
-  //           moves.push({ move: "attack", args: [position] });
-  //         }
-  //       });
-  //     } else {
-  //       if (!currentPlayer.isMoving && !currentPlayer.hasMoved) {
-  //         moves.push({ move: "rollMovementDice" });
-  //       } else if (currentPlayer.isMoving) {
-  //         const possibleMoves = getAdjacentTiles(
-  //           currentPosition,
-  //           G.tiles.length
-  //         );
-  //         possibleMoves.forEach((tileIdx) => {
-  //           if (G.tiles[tileIdx] === null) {
-  //             moves.push({ move: "moveOneSquare", args: [tileIdx] });
-  //           }
-  //         });
-  //       }
-  //     }
-  //     return moves;
-  //   },
-  // },
-
-  // ai: {
-  //   enumerate: (G, ctx) => {
-  //     const moves = [];
-  //     const currentPlayer = G.players[ctx.currentPlayer];
-  //     const currentPosition = currentPlayer.position;
-  //     const currentPlayerTeam = currentPlayer.team;
-
-  //     const otherTeam = currentPlayerTeam === "HERO" ? "MONSTER" : "HERO";
-  //     const otherTeamPlayers = G.players.filter(
-  //       (player) => player.team === otherTeam
-  //     );
-
-  //     // If there are no enemies left, AI can only move
-  //     if (otherTeamPlayers.length === 0) {
-  //       moves.push({ move: "rollMovementDice" });
-  //       return moves;
-  //     }
-
-  //     let minDistance = Infinity;
-  //     let closestEnemy = null;
-
-  //     // Find the closest monster
-  //     otherTeamPlayers.forEach((monster) => {
-  //       const distance = calculateMoveTiles(
-  //         currentPosition,
-  //         monster.position,
-  //         G.tiles.length
-  //       );
-  //       if (distance < minDistance) {
-  //         minDistance = distance;
-  //         closestEnemy = monster;
-  //       }
-  //     });
-
-  //     const adjacentTiles = getAdjacentTiles(currentPosition, G.tiles.length);
-
-  //     // Calculate the distance from each adjacent tile to the close monster
-  //     adjacentTiles.forEach((adjacentTile) => {
-  //       const distance = calculateMoveTiles(
-  //         adjacentTile,
-  //         closestEnemy.position,
-  //         G.tiles.length
-  //       );
-
-  //       // If the distance is less than the current distance, move to that tile
-  //       if (
-  //         distance < minDistance &&
-  //         G.tiles[adjacentTile] === null &&
-  //         currentPlayer.isMoving
-  //       ) {
-  //         moves.push({ move: "moveOneSquare", args: [adjacentTile] });
-  //       }
-  //     });
-
-  //     // If AI is next to the monster, it should attack
-  //     if (minDistance === 1) {
-  //       moves.push({ move: "attack", args: [closestEnemy.position] });
-  //     }
-
-  //     // If the AI can't do any of the above, then it should roll the movement dice
-  //     if (moves.length === 0) {
-  //       moves.push({ move: "rollMovementDice" });
-  //     }
-
-  //     return moves;
-  //   },
-  // },
 };
 
-function getBattleRoll(diceArray) {
+export function getBattleRoll(diceArray) {
   const dice = diceArray.map((die) => {
     if (die === 1) {
       return "blank";
@@ -384,24 +332,34 @@ function getBattleRoll(diceArray) {
   return dice;
 }
 
-function boxStartPosition(players) {
-  // const playerPositions = players.map((player) => player.position);
-  const boxStart = Math.floor(Math.random() * 100);
-  // if (playerPositions.includes(boxStart)) {
-  //   return boxStartPosition(players);
-  // }
-  return boxStart;
+function boxPosition(occupiedTiles) {
+  const newBox = Math.floor(Math.random() * 81);
+  if (occupiedTiles.includes(newBox)) {
+    return boxPosition(occupiedTiles);
+  }
+  occupiedTiles.push(newBox);
+  return newBox;
 }
 
-function getBoxRoll(result) {
-  if (result === 10) {
-    return { name: "Fiery Sword", type: "ATK", boost: 2 };
-  } else if (result === 9 || result === 8) {
-    return { name: "Sword", type: "ATK", boost: 1 };
-  } else if (result === 7 || result === 6) {
-    return { name: "Shield", type: "DEF", boost: 1 };
-  } else if (result === 5 || result === 4) {
-    return { name: "Healing Potion", type: "HP", boost: 1 };
+export function getBoxRoll(result) {
+  if (result === 12) {
+    return { name: "Scroll of Lightning", type: "DMG", amount: 1 };
+  } else if (result === 11) {
+    return { name: "Fiery Spear", type: "ATK", amount: 2 };
+  } else if (result === 10) {
+    return { name: "Magic Armor", type: "DEF", amount: 2 };
+  } else if (result === 9) {
+    return { name: "Stealthy Dagger", type: "ATK", amount: 1 };
+  } else if (result === 8) {
+    return { name: "Pair of Gauntlets", type: "DEF", amount: 1 };
+  } else if (result === 7) {
+    return { name: "Spiked Mace", type: "ATK", amount: 1 };
+  } else if (result === 6) {
+    return { name: "Studded Helmet", type: "DEF", amount: 1 };
+  } else if (result === 5) {
+    return { name: "Healing Potion", type: "HP", amount: 1 };
+  } else if (result === 4) {
+    return { name: "Balm of Soothing", type: "HP", amount: 1 };
   } else {
     return null;
   }

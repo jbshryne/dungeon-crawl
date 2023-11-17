@@ -1,49 +1,51 @@
 import { useEffect, useState } from "react";
+import BattleDie from "./BattleDie";
+import {
+  GiFishMonster,
+  GiSwordwoman,
+  GiDiceSixFacesOne,
+  GiDiceSixFacesTwo,
+  GiDiceSixFacesThree,
+  GiDiceSixFacesFour,
+  GiDiceSixFacesFive,
+  GiDiceSixFacesSix,
+} from "react-icons/gi";
+import { GiChest } from "react-icons/gi";
 
-export function Board({ ctx, G, moves }) {
+export function Board({ ctx, G, moves, events }) {
+  const [p1Status, setP1Status] = useState(G.messages.p1);
+  const [p2Status, setP2Status] = useState(G.messages.p2);
+  const [p1BattleDice, setP1BattleDice] = useState(G.battleDice.p1);
+  const [p2BattleDice, setP2BattleDice] = useState(G.battleDice.p2);
+  const [movementRoll, setMovementRoll] = useState([]);
   const [hoveredTile, setHoveredTile] = useState(null);
   const boardTiles = G.tiles.length;
   const currentPlayer = G.players[ctx.currentPlayer];
   const currentPosition = currentPlayer.position;
   const currentPlayerTeam = currentPlayer.team;
 
-  // if (currentPlayerTeam === "ENEMY") {
-  //   console.log("AI is thinking...");
+  useEffect(() => {
+    setP1Status(G.messages.p1);
+  }, [G.messages.p1]);
 
-  //   // console.log(moves);
-  //   // while (!currentPlayer.hasMoved) {
-  //   const otherTeam = "HERO";
-  //   const otherTeamPlayer = G.players.find(
-  //     (player) => player.team === otherTeam
-  //   );
-  //   // console.log(otherTeamPlayer);
-  //   const otherTeamPosition = otherTeamPlayer.position;
-  //   // console.log(otherTeamPosition);
-  //   if (
-  //     isAdjacentTile(otherTeamPosition, currentPosition, boardTiles) &&
-  //     !currentPlayer.hasDoneAction
-  //   ) {
-  //     moves.attack(otherTeamPosition);
-  //     // const isAdjacentToOtherTeam = (position) => {
-  //     //   const adjacentPositions = getAdjacentTiles(position, G.tiles.length);
-  //     //   return adjacentPositions.some((position) => {
-  //     //     return otherTeamPositions.includes(position);
-  //     //   });
-  //     // };
+  useEffect(() => {
+    setP2Status(G.messages.p2);
+  }, [G.messages.p2]);
 
-  //     // if (isAdjacentToOtherTeam(currentPosition)) {
-  //     //   otherTeamPositions.forEach((position) => {
-  //     //     if (isAdjacentTile(position, currentPosition, G.tiles.length)) {
-  //     //       moves.attack(position);
-  //     //     }
-  //     //   });
-  //     // }
-  //   }
-  // }
+  useEffect(() => {
+    setP1BattleDice(G.battleDice.p1);
+  }, [G.battleDice.p1]);
+
+  useEffect(() => {
+    setP2BattleDice(G.battleDice.p2);
+  }, [G.battleDice.p2]);
+
+  useEffect(() => {
+    setMovementRoll(G.movementDice);
+  }, [G.movementDice]);
 
   const handleKeyPress = (event) => {
     const key = event.key.toLowerCase();
-    // console.log(key);
     const movementKeys = [
       "w",
       "a",
@@ -83,7 +85,7 @@ export function Board({ ctx, G, moves }) {
       if (isAdjacentTile(newTile, currentPosition, boardTiles)) {
         if (G.tiles[newTile] === null) {
           moves.moveOneSquare(newTile);
-        } else if (G.tiles[newTile] === "box") {
+        } else if (G.tiles[newTile] === "BOX") {
           moves.openBox(newTile);
         } else if (G.tiles[newTile].team !== currentPlayerTeam) {
           moves.attack(newTile);
@@ -96,7 +98,7 @@ export function Board({ ctx, G, moves }) {
     if (isAdjacentTile(tileIdx, currentPosition, boardTiles)) {
       if (G.tiles[tileIdx] === null) {
         moves.moveOneSquare(tileIdx);
-      } else if (G.tiles[tileIdx] === "box") {
+      } else if (G.tiles[tileIdx] === "BOX") {
         moves.openBox(tileIdx);
       } else if (G.tiles[tileIdx].team !== currentPlayerTeam) {
         moves.attack(tileIdx);
@@ -113,10 +115,8 @@ export function Board({ ctx, G, moves }) {
   };
 
   useEffect(() => {
-    // Attach the event listener when the component mounts
     document.addEventListener("keydown", handleKeyPress);
 
-    // Detach the event listener when the component unmounts
     return () => {
       document.removeEventListener("keydown", handleKeyPress);
     };
@@ -132,21 +132,37 @@ export function Board({ ctx, G, moves }) {
       const isOpponent =
         isAdjacent &&
         G.tiles[idx] !== null &&
-        G.players.find((player) => G.tiles[idx] === player.name) &&
-        G.players.find((player) => G.tiles[idx] === player.name).team !==
+        G.players.find((player) => G.tiles[idx] === player.team) &&
+        G.players.find((player) => G.tiles[idx] === player.team) !==
           currentPlayer.team;
+      const isItem = isAdjacent && G.tiles[idx] === "BOX";
+
+      const tileContent = G.tiles[idx];
+
+      const renderTileContent = (content) => {
+        if (content === "Quester") {
+          return <GiSwordwoman className="board-icon player-icon" />;
+        } else if (content === "Monster") {
+          return <GiFishMonster className="board-icon player-icon" />;
+        } else if (content === "BOX") {
+          return <GiChest className="board-icon box-icon" />;
+        } else {
+          return content;
+        }
+      };
 
       tiles.push(
         <td key={idx}>
           <div
             className={`tile ${isAdjacent && "adjacent"} ${
               idx === hoveredTile && "hovered"
-            } ${isOpponent && "opponent"}`}
+            } ${isOpponent && "opponent"} ${isItem && "item"}`}
             onClick={() => onClick(idx)}
             onMouseEnter={() => onTileHover(idx)}
             onMouseLeave={() => setHoveredTile(null)}
           >
-            {G.tiles[idx]}
+            {/* {G.tiles[idx]} */}
+            {renderTileContent(tileContent)}
           </div>
         </td>
       );
@@ -154,12 +170,70 @@ export function Board({ ctx, G, moves }) {
     tbody.push(<tr key={i}>{tiles}</tr>);
   }
 
+  const PlayerPanel = ({ player, status, battleDice, movementDice }) => {
+    const name = player.name;
+    const hitPoints = player.hitPoints;
+    const attackDice = player.attackDice + player.attackBoost;
+    const defenseDice = player.defenseDice + player.defenseBoost;
+    const movement = player.moveTiles;
+    const powerup = player.powerup;
+    const isCurrentPlayer = currentPlayer.name === name;
+
+    return (
+      <div className="player-panel">
+        {status}
+        <br />
+        <p>{name}</p>
+        <div className="movement-die-container">
+          {isCurrentPlayer && renderMovementRoll(movementDice)}
+        </div>
+        <br />
+        Hit Points: {hitPoints}
+        <br />
+        Attack Dice: {attackDice}
+        <br />
+        Defense Dice: {defenseDice}
+        <br />
+        Moves Left: {movement}
+        <br />
+        Powerup: {powerup ? powerup.name : "None"}
+        <br />
+        {powerup && powerup.type === "ATK" && (
+          <i>(+{powerup.amount} to Attack Dice)</i>
+        )}
+        {powerup && powerup.type === "DEF" && (
+          <i>(+{powerup.amount} to Defense Dice)</i>
+        )}
+        <div className="battle-die-container">
+          {renderBattleRoll(battleDice)}
+        </div>
+        <button
+          onClick={() => events.endTurn()}
+          disabled={currentPlayer.name !== name ? "disabled" : ""}
+        >
+          End Turn
+        </button>
+      </div>
+    );
+  };
+
   return (
-    <div>
+    <div className="play-screen">
+      <PlayerPanel
+        player={G.players[0]}
+        status={p1Status}
+        battleDice={p1BattleDice}
+        movementDice={movementRoll}
+      />
       <table id="board">
         <tbody>{tbody}</tbody>
       </table>
-      <p id="info-box"></p>
+      <PlayerPanel
+        player={G.players[1]}
+        status={p2Status}
+        battleDice={p2BattleDice}
+        movementDice={movementRoll}
+      />
     </div>
   );
 }
@@ -216,4 +290,35 @@ export function calculateMoveTiles(startTile, targetTile, boardSize) {
   const distance = Math.abs(start.x - target.x) + Math.abs(start.y - target.y);
 
   return distance;
+}
+
+function renderMovementRoll(roll) {
+  console.log(roll);
+  return roll.map((die, idx) => {
+    if (die === 1) {
+      return <GiDiceSixFacesOne key={idx} className="movement-die" />;
+    }
+    if (die === 2) {
+      return <GiDiceSixFacesTwo key={idx} className="movement-die" />;
+    }
+    if (die === 3) {
+      return <GiDiceSixFacesThree key={idx} className="movement-die" />;
+    }
+    if (die === 4) {
+      return <GiDiceSixFacesFour key={idx} className="movement-die" />;
+    }
+    if (die === 5) {
+      return <GiDiceSixFacesFive key={idx} className="movement-die" />;
+    }
+    if (die === 6) {
+      return <GiDiceSixFacesSix key={idx} className="movement-die" />;
+    }
+  });
+}
+
+function renderBattleRoll(roll) {
+  // console.log(roll);
+  return roll.map((die, idx) => {
+    return <BattleDie key={idx} result={die} />;
+  });
 }
