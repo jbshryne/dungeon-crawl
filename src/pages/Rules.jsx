@@ -75,8 +75,9 @@ const Rules = () => {
         that appear around the board. Move to an adjacent square and click on a
         box to open it. If the box isn't empty (!), you'll either get a one-time
         use item or a powerup. A powerup will boost your Attack or Defense, but
-        will be lost as soon as you take damage. You can only have one powerup
-        at a time, so open boxes strategically!
+        if your opponent hits you, the powerup will absorb 1 point of damage and
+        then be lost. You can only have one powerup at a time, so open boxes
+        strategically!
       </p>
     </div>
   );
