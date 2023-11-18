@@ -27,7 +27,6 @@ function BoardDisplay({ G, ctx, moves, events }) {
 
   return (
     <div id="board-display">
-      {/* <NavBar /> */}
       <p className="game-message">{gameMessage}</p>
       <Board G={G} ctx={ctx} moves={moves} events={events} />
     </div>

@@ -10,8 +10,8 @@ import {
   GiDiceSixFacesFive,
   GiDiceSixFacesSix,
   GiCheckMark,
+  GiChest,
 } from "react-icons/gi";
-import { GiChest } from "react-icons/gi";
 
 export function Board({ ctx, G, moves, events }) {
   const [p1Status, setP1Status] = useState(G.messages.p1);
@@ -129,6 +129,7 @@ export function Board({ ctx, G, moves, events }) {
     let tiles = [];
     for (let j = 0; j < Math.sqrt(boardTiles); j++) {
       const idx = Math.sqrt(boardTiles) * i + j;
+
       const isAdjacent = isAdjacentTile(idx, currentPosition, boardTiles);
       const isOpponent =
         isAdjacent &&
@@ -183,46 +184,67 @@ export function Board({ ctx, G, moves, events }) {
 
     return (
       <div className={`player-panel ${isCurrentPlayer && "active"}`}>
-        {status}
-        <br />
-        <div className="movement-die-container">
-          {isCurrentPlayer && renderMovementRoll(movementDice)}
-        </div>
-        <p>{name}</p>
-        <table className="player-stats">
-          <thead>
-            <th>Moves Left</th>
-            <th>Action Taken</th>
-            <th>Attack Dice</th>
-            <th>Defense Dice</th>
-            <th>Hit Points</th>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{movement}</td>
-              <td>{action ? <GiCheckMark style={{ size: 36 }} /> : ""}</td>
-              <td>{attackDice}</td>
-              <td>{defenseDice}</td>
-              <td>{hitPoints}</td>
-            </tr>
-          </tbody>
-        </table>
-        Powerup: {powerup ? powerup.name : "None"}
-        {powerup && powerup.type === "ATK" && (
-          <i>(+{powerup.amount} to Attack Dice)</i>
-        )}
-        {powerup && powerup.type === "DEF" && (
-          <i>(+{powerup.amount} to Defense Dice)</i>
-        )}
-        <div className="battle-die-container">
-          {renderBattleRoll(battleDice, isCurrentPlayer)}
-        </div>
-        <button
-          onClick={() => events.endTurn()}
-          disabled={currentPlayer.name !== name ? "disabled" : ""}
-        >
-          End Turn
-        </button>
+        <section className="player-status-section">
+          <p className="player-name">
+            {name === "Quester" ? (
+              <GiSwordwoman style={{ fontSize: 30 }} />
+            ) : (
+              <GiFishMonster style={{ fontSize: 30 }} />
+            )}{" "}
+            {name}
+          </p>
+        </section>
+        <section className="player-status-section">
+          <span>MOVEMENT ROLL</span>
+          <div className="movement-die-container">
+            {isCurrentPlayer && renderMovementRoll(movementDice)}
+          </div>
+        </section>
+        <section className="player-status-section">
+          <table className="player-stats">
+            <thead>
+              <tr>
+                <th>Moves Left</th>
+                <th>Action Taken</th>
+                <th>Attack Dice</th>
+                <th>Defense Dice</th>
+                <th>Hit Points</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{movement}</td>
+                <td>{action ? <GiCheckMark style={{ size: 36 }} /> : ""}</td>
+                <td>{attackDice}</td>
+                <td>{defenseDice}</td>
+                <td>{hitPoints}</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+        <section className="player-status-section">
+          <span>BATTLE ROLL</span>
+          <div className="battle-die-container">
+            {renderBattleRoll(battleDice, isCurrentPlayer)}
+          </div>
+        </section>
+        <span>
+          POWERUP: {powerup ? <b>{powerup.name}</b> : "None"}{" "}
+          {powerup && powerup.type === "ATK" && (
+            <i>(+{powerup.amount} to Attack Dice)</i>
+          )}
+          {powerup && powerup.type === "DEF" && (
+            <i>(+{powerup.amount} to Defense Dice)</i>
+          )}
+        </span>
+        <section>
+          <button
+            onClick={() => events.endTurn()}
+            className={currentPlayer.name !== name ? "disabled" : ""}
+          >
+            End Turn
+          </button>
+        </section>
       </div>
     );
   };

@@ -32,10 +32,18 @@ const Auth = () => {
       ) : (
         <>
           <section>
-            <button onClick={handleComponentChange} name="login">
+            <button
+              className="tab-button"
+              onClick={handleComponentChange}
+              name="login"
+            >
               Sign In
             </button>
-            <button onClick={handleComponentChange} name="signup">
+            <button
+              className="tab-button"
+              onClick={handleComponentChange}
+              name="signup"
+            >
               Create a New Account
             </button>
           </section>
@@ -43,7 +51,7 @@ const Auth = () => {
         </>
       )}
       <img
-        style={{ width: 500 }}
+        style={{ width: 480 }}
         src="/assets/dungeon-throwdown 01.png"
         alt="female warrior fighting reptile"
       />

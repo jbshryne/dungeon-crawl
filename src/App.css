@@ -8,16 +8,26 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* justify-content: center; */
+  font-family: "Cinzel", cursive;
   height: 95vh;
   width: 100vw;
 }
 
 #hero-image {
-  height: 600px;
+  height: 540px;
+}
+
+.hero-title {
+  font-family: "Cinzel", sans-serif;
+  font-weight: 700;
+  font-size: 48px;
+  margin: 0;
+  padding: 0;
+  /* color: rgb(221, 196, 162); */
 }
 
 .auth-page {
+  font-family: "Uncial Antiqua", cursive;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -30,28 +40,45 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  /* justify-content: center; */
   width: 700px;
-  height: 200px;
+  height: 120px;
   color: white;
   background-color: rgba(211, 211, 210, 0.2);
 }
 
+.auth-component h1 {
+  margin: 10px 0 0 0;
+  font-size: 30px;
+  /* color: rgb(221, 196, 162); */
+}
+
 .nav-bar {
+  font-family: "Cinzel", bold;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  font-size: 30px;
   height: 50px;
-  width: 100%;
+  width: 100vw;
   background-color: rgba(211, 211, 210, 0.2);
+  padding: 40px 20px 0px 20px;
+  margin-bottom: 20px;
+}
+
+.nav-bar .hero-title {
+  font-size: 30px;
+  color: rgb(221, 196, 162);
 }
 
 .nav-bar-item {
+  font-family: Cinzel, sans-serif;
+  font-weight: 700;
   text-decoration: none;
   color: white;
   font-size: 18px;
-  padding: 0 6px;
+  padding: 0 10px;
 }
 
 .rules-page {
@@ -63,23 +90,50 @@ a {
   width: 100vw;
 }
 
+.rules-page header {
+  display: flex;
+  flex-direction: rown;
+}
+
+.rules-page h1 {
+  font-family: "Uncial Antiqua", sans-serif;
+  margin: 0px 10px;
+  font-size: 40px;
+  /* color: rgb(221, 196, 162); */
+}
+
+.rules-page-header-icon {
+  font-size: 40px;
+  margin: 0px 10px;
+}
+
 .rules-page p {
+  font-family: Alegreya, serif;
+  font-weight: 500;
   width: 90vw;
-  font-size: 18px;
+  font-size: 22px;
   line-height: 1.5;
+  color: rgb(218, 215, 215);
   text-align: left;
+}
+
+.rules-page p b {
+  font-weight: 600;
+  color: white;
 }
 
 .play-screen {
   display: flex;
-  flex-direction: row;
+  align-self: center;
 }
 
 #board-display {
+  font-family: Alegreya, serif;
+  font-size: 120%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* justify-content: center; */
+  justify-content: center;
   height: 95vh;
   width: 100vw;
 }
@@ -90,21 +144,32 @@ a {
   align-items: center;
   justify-content: center;
   width: 400px;
-  height: 400px;
+  height: 480px;
+  padding: 20px;
   color: white;
   background-color: rgba(211, 211, 210, 0.2);
+}
+.player-status-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
 }
 
 .player-panel.active {
   background-color: rgba(211, 211, 210, 0.4);
 }
 
+.player-name {
+  font-family: "Cinzel", sans-serif;
+  font-weight: 700;
+  font-size: 30px;
+  margin: 0;
+  padding: 0;
+  /* color: rgb(221, 196, 162); */
+}
+
 #board {
-  /* display: flex;
-  flex-wrap: wrap; */
-  /* width: 500px;
-  height: 500px; */
-  /* margin: 0 auto; */
   border: 1px solid rgb(191, 191, 191);
 }
 
@@ -115,6 +180,7 @@ a {
   height: 50px;
   line-height: 50px;
   text-align: center;
+  justify-content: center;
 }
 
 /* .tile:hover, */
@@ -136,6 +202,8 @@ a {
 
 .board-icon {
   padding-top: 6px;
+  padding-left: 1px;
+  /* padding-right: 200px; */
 }
 
 .player-icon {
@@ -156,12 +224,13 @@ a {
 }
 
 .player-stats td {
+  font-family: Cinzel, sans-serif;
   border: 1px solid rgba(219, 214, 214, 0.354);
   text-align: center;
   font-size: 24px;
   font-weight: bold;
   padding: 0;
-  height: 40px;
+  height: 48px;
 }
 
 .movement-die-container {
@@ -169,9 +238,9 @@ a {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  width: 200px;
-  height: 50vh;
-  /* background-color: #f0f0f0; */
+  width: 150px;
+  min-height: 60px;
+  outline: 1px solid rgba(219, 214, 214, 0.354);
 }
 
 .battle-die-container {
@@ -179,9 +248,9 @@ a {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  width: 30vw;
-  height: 50vh;
-  /* background-color: #f0f0f0; */
+  width: 360px;
+  min-height: 60px;
+  outline: 1px solid rgba(219, 214, 214, 0.354);
 }
 
 .movement-die {
@@ -207,4 +276,57 @@ a {
 
 .battle-die.failure {
   opacity: 0.5;
+}
+
+.battle-die.demo-die {
+  font-size: 16px;
+  width: 26px;
+  height: 26px;
+  display: inline;
+  padding: 0;
+  margin: 0;
+  border: none;
+}
+
+button {
+  font-family: "Cinzel", cursive;
+  font-weight: 700;
+  font-size: 20px;
+  color: white;
+  background-color: rgb(91, 62, 62);
+  border: 2px solid rgb(0, 0, 0);
+  margin: 10px;
+  padding: 10px 20px;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: rgb(151, 115, 115);
+}
+
+button.disabled {
+  background-color: rgb(91, 62, 62);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tab-button {
+  font-size: 18px;
+  color: white;
+  background-color: rgb(91, 62, 62);
+  border: 2px solid rgb(0, 0, 0);
+  padding: 10px 20px;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border-radius: 5px 5px 0 0; /* Rounded top corners for a tab-like appearance */
+  margin-bottom: 0;
+}
+
+.tab-button:hover {
+  background-color: rgb(151, 115, 115);
 }

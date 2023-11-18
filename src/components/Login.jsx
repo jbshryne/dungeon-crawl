@@ -45,7 +45,7 @@ const Login = () => {
 
   return (
     <div className="auth-component">
-      <h1>Login</h1>
+      <h1>LOGIN</h1>
       <form onSubmit={handleLogin}>
         <input
           type="text"
@@ -61,6 +61,7 @@ const Login = () => {
         />
         <button type="submit">Login</button>
       </form>
+      <p> </p>
     </div>
   );
 };

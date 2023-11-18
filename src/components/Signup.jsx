@@ -55,7 +55,7 @@ const Signup = () => {
 
   return (
     <div className="auth-component">
-      <h1>Signup</h1>
+      <h1>CREATE ACCOUNT</h1>
       <form onSubmit={handleSignup}>
         <input
           type="text"

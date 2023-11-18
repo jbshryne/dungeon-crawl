@@ -9,4 +9,5 @@ I have many "stretch goals" to make this my ultimate version of the game -- like
 - React
 - Express.js
 - MongoDB / Mongoose
-- boardgame.io (or Redux)
+- boardgame.io
+- React Icons

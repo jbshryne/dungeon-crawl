@@ -13,15 +13,14 @@ const NavBar = () => {
   return (
     <div className="nav-bar">
       <Link to="/" className="nav-bar-item">
-        <span>Dungeon Throwdown</span>
+        <span className="hero-title">Dungeon Throwdown</span>
       </Link>
       <section>
         <Link to="/game" className="nav-bar-item">
-          <span>Game</span>
+          <span>GAME</span>
         </Link>
         <Link to="/rules" className="nav-bar-item">
-          {" "}
-          <span>How to Play</span>
+          <span>HOW TO PLAY</span>
         </Link>
         {isLoggedIn ? (
           <span
@@ -29,11 +28,11 @@ const NavBar = () => {
             onClick={handleLogout}
             style={{ cursor: "pointer" }}
           >
-            Logout
+            LOGOUT
           </span>
         ) : (
           <Link to="/auth" className="nav-bar-item">
-            <span>Login</span>
+            <span>LOGIN</span>
           </Link>
         )}
       </section>
