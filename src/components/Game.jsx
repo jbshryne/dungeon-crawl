@@ -274,7 +274,7 @@ export const DungeonThrowdown = {
 
       const movementRoll = random.D6(2);
       const movementTotal = movementRoll[0] + movementRoll[1];
-      // currentPlayer.moveTiles = movementTotal;
+      currentPlayer.moveTiles = movementTotal;
       // console.log(
       //   `${currentPlayer.name} rolled ${movementRoll[0]} and ${movementRoll[1]} for a total of ${movementTotal} movement tiles`
       // );

@@ -7,7 +7,7 @@ const Signup = () => {
     confirmPassword: "",
   });
 
-  const [signupStatus, setSignupStatus] = useState(null);
+  const [signupStatus, setSignupStatus] = useState("CREATE ACCOUNT");
 
   const handleSignup = async (event) => {
     event.preventDefault();
@@ -38,7 +38,7 @@ const Signup = () => {
     console.log(response);
 
     if (response.ok) {
-      setSignupStatus("You can now login!");
+      setSignupStatus("SUCCESS! You can now login");
     } else {
       setSignupStatus("Something went wrong...");
     }
@@ -55,7 +55,7 @@ const Signup = () => {
 
   return (
     <div className="auth-component">
-      <h1>CREATE ACCOUNT</h1>
+      <h1>{signupStatus}</h1>
       <form onSubmit={handleSignup}>
         <input
           type="text"
@@ -77,7 +77,6 @@ const Signup = () => {
         />
         <button type="submit">Signup</button>
       </form>
-      <p>{signupStatus}</p>
     </div>
   );
 };

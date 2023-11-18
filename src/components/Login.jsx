@@ -9,6 +9,8 @@ const Login = () => {
     password: "",
   });
 
+  const [message, setMessage] = useState("LOGIN");
+
   const handleInputChange = (event) => {
     setFormData((currentFormData) => {
       return {
@@ -30,7 +32,7 @@ const Login = () => {
       body: JSON.stringify(formData),
     });
 
-    // console.log(response);
+    console.log(response);
 
     if (response.ok) {
       console.log("Login successful!");
@@ -40,12 +42,15 @@ const Login = () => {
         localStorage.setItem("currentUser", JSON.stringify(data));
         navigate("/game");
       }
+    } else {
+      console.log("Login failed.");
+      setMessage("Something went wrong, please try again");
     }
   };
 
   return (
     <div className="auth-component">
-      <h1>LOGIN</h1>
+      <h1>{message}</h1>
       <form onSubmit={handleLogin}>
         <input
           type="text"
@@ -61,7 +66,7 @@ const Login = () => {
         />
         <button type="submit">Login</button>
       </form>
-      <p> </p>
+      <p></p>
     </div>
   );
 };
