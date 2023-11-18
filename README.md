@@ -60,8 +60,8 @@ at a time, so open boxes strategically!
 
 ## Technologies
 
-- React
-- Express.js
+- React / JSX
+- Node / Express
 - MongoDB / Mongoose
 - boardgame.io
 - React Icons
@@ -69,6 +69,8 @@ at a time, so open boxes strategically!
 ## Future Features
 
 - Using boardgame.io's integrated Socket.io functionality to allow for networked multiplayer
+- Persisting game state
+- Saved games associated with user accounts
 - Character customization
 - More boards and items
-- AI-powered Enemies for "dungeon crawling" mode
+- AI-powered enemies for "dungeon crawling" mode
