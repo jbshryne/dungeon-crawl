@@ -159,8 +159,8 @@ img {
   width: 400px;
   height: 480px;
   padding: 20px;
-  color: white;
-  background-color: rgba(211, 211, 210, 0.2);
+  color: rgb(255, 255, 255);
+  background-color: rgba(165, 232, 141, 0.08);
 }
 .player-status-section {
   display: flex;
@@ -170,7 +170,7 @@ img {
 }
 
 .player-panel.active {
-  background-color: rgba(211, 211, 210, 0.4);
+  background-color: rgba(157, 218, 141, 0.2);
 }
 
 .player-name {

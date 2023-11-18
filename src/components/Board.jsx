@@ -45,6 +45,17 @@ export function Board({ ctx, G, moves, events }) {
     setMovementRoll(G.movementDice);
   }, [G.movementDice]);
 
+  // if (
+  //   currentPlayer.hasDoneAction & currentPlayer.hasMoved &&
+  //   !currentPlayer.isMoving
+  // ) {
+  //   console.log("End turn");
+  //   events.endTurn();
+  //   // currentPlayer.hasMoved = false;
+  //   // currentPlayer.hasDoneAction = false;
+  //   setTimeout(() => {}, 1000);
+  // }
+
   const handleKeyPress = (event) => {
     const key = event.key.toLowerCase();
     const movementKeys = [
@@ -56,6 +67,7 @@ export function Board({ ctx, G, moves, events }) {
       "arrowleft",
       "arrowdown",
       "arrowright",
+      "t",
     ];
 
     if (movementKeys.includes(key)) {
@@ -78,6 +90,9 @@ export function Board({ ctx, G, moves, events }) {
         case "d":
         case "arrowright":
           newTile = currentPosition + 1;
+          break;
+        case "t":
+          events.endTurn();
           break;
         default:
           break;
@@ -225,7 +240,7 @@ export function Board({ ctx, G, moves, events }) {
         <section className="player-status-section">
           <span>BATTLE ROLL</span>
           <div className="battle-die-container">
-            {renderBattleRoll(battleDice, isCurrentPlayer)}
+            {renderBattleRoll(battleDice)}
           </div>
         </section>
         <span>
@@ -347,9 +362,9 @@ function renderMovementRoll(roll) {
   });
 }
 
-function renderBattleRoll(roll, isAttacking) {
+function renderBattleRoll(roll) {
   // console.log(roll);
-  return roll.map((die, idx) => {
-    return <BattleDie key={idx} result={die} isAttacking={isAttacking} />;
+  return roll.result.map((die, idx) => {
+    return <BattleDie key={idx} result={die} type={roll.type} />;
   });
 }

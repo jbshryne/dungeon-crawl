@@ -47,6 +47,18 @@ const startingBoxes = [
   { position: boxPosition(occupiedTiles), type: "BOX" },
 ];
 
+function getHitTextArray(damage) {
+  const hitTextArray = [];
+  if (damage <= 1) {
+    hitTextArray.push("IT CONNECTS!", "SUCCESS!", "GOT 'EM!", "NICE!");
+  } else if ((damage = 2)) {
+    hitTextArray.push("BOOM!", "WHAM!", "OUCH!", "OOF!");
+  } else if (damage >= 3) {
+    hitTextArray.push("KAPOW!", "WOW!", "AMAZING!", "INCREDIBLE!");
+  }
+  return hitTextArray;
+}
+
 export const DungeonThrowdown = {
   setup: () => ({
     tiles: Array(81)
@@ -64,8 +76,8 @@ export const DungeonThrowdown = {
     },
     movementDice: [],
     battleDice: {
-      p1: [],
-      p2: [],
+      p1: { result: [], type: "" },
+      p2: { result: [], type: "" },
     },
   }),
 
@@ -98,10 +110,9 @@ export const DungeonThrowdown = {
         currentPlayer.isMoving = false;
         currentPlayer.hasMoved = true;
         if (
-          getAdjacentTiles(currentPosition, G.tiles.length).forEach((tile) => {
+          getAdjacentTiles(currentPosition, G.tiles.length).every((tile) => {
             return tile === null;
-          }) &&
-          currentPlayer.hasDoneAction
+          })
         ) {
           events.endTurn();
         }
@@ -116,7 +127,6 @@ export const DungeonThrowdown = {
       const attackedPlayer = G.players.find(
         (player) => player.position === tileIdx
       );
-      console.log(attackedPlayer);
       const attackedPlayerName = attackedPlayer.name;
       const attackedPlayerTeam = attackedPlayer.team;
 
@@ -125,55 +135,66 @@ export const DungeonThrowdown = {
         currentPlayerTeam !== attackedPlayerTeam &&
         !currentPlayer.hasDoneAction
       ) {
-        // events.endStage();
         console.log(
           currentPlayerName + " attacks " + attackedPlayerName + "..."
         );
         currentPlayer.hasDoneAction = true;
         const attackRoll = getBattleRoll(
-          random.D6(currentPlayer.attackDice + currentPlayer.attackBoost)
+          random.D6(currentPlayer.attackDice + currentPlayer.attackBoost),
+          "atk"
         );
         const defenseRoll = getBattleRoll(
-          random.D6(attackedPlayer.defenseDice + attackedPlayer.defenseBoost)
+          random.D6(attackedPlayer.defenseDice + attackedPlayer.defenseBoost),
+          "def"
         );
 
-        const attackTotal = attackRoll.filter((die) => die === "atk").length;
-        const defenseTotal = defenseRoll.filter((die) => die === "def").length;
+        const attackTotal = attackRoll.result.filter(
+          (die) => die === "atk"
+        ).length;
+        const defenseTotal = defenseRoll.result.filter(
+          (die) => die === "def"
+        ).length;
 
-        console.log("Attack roll:", attackRoll, "successes:", attackTotal);
+        // if (isPlayer1) {
+        //   G.battleDice.p1 = { type: "atk", roll: attackRoll };
+        //   G.battleDice.p2 = { type: "def", roll: defenseRoll };
+        // } else {
+        //   G.battleDice.p2 = { type: "atk", roll: attackRoll };
+        //   G.battleDice.p1 = { type: "def", roll: defenseRoll };
+        // }
+
         if (isPlayer1) {
           G.battleDice.p1 = attackRoll;
-        } else {
-          G.battleDice.p2 = attackRoll;
-        }
-        console.log("Defense roll:", defenseRoll, "successes:", defenseTotal);
-        if (isPlayer1) {
           G.battleDice.p2 = defenseRoll;
         } else {
+          G.battleDice.p2 = attackRoll;
           G.battleDice.p1 = defenseRoll;
         }
 
         if (attackTotal - defenseTotal > 0) {
-          attackedPlayer.hitPoints -= attackTotal - defenseTotal;
-
-          G.messages.game = `SUCCESSFULL ATTACK! ${attackedPlayerName} has ${
-            attackedPlayer.hitPoints
-          } now hit point(s)${
-            attackedPlayer.powerup
-              ? `  and has the ${attackedPlayer.powerup.name}!`
-              : ""
-          }`;
-
+          let damage = attackTotal - defenseTotal;
           if (attackedPlayer.powerup) {
-            console.log(
-              `${attackedPlayerName} lost the ${attackedPlayer.powerup.name}!`
-            );
-            attackedPlayer.powerup = null;
-            attackedPlayer.attackBoost = 0;
-            attackedPlayer.defenseBoost = 0;
+            damage -= 1;
+          }
+          attackedPlayer.hitPoints -= damage;
+
+          const hitText = getHitTextArray(damage)[random.D4(1)[0] - 1];
+
+          G.messages.game = `${currentPlayer.name} attacks ... and ${hitText} ${attackedPlayerName} takes ${damage} damage.`;
+          if (attackedPlayer.powerup) {
+            G.messages.game += ` (The ${attackedPlayer.powerup.name} absorbs one damage, but is lost!)`;
           }
         } else {
-          G.messages.game = "The attack misses!";
+          G.messages.game = `${currentPlayer.name} attacks ... and it misses!`;
+        }
+
+        if (attackedPlayer.powerup) {
+          console.log(
+            `${attackedPlayerName} lost the ${attackedPlayer.powerup.name}!`
+          );
+          attackedPlayer.powerup = null;
+          attackedPlayer.attackBoost = 0;
+          attackedPlayer.defenseBoost = 0;
         }
 
         if (attackedPlayer.hitPoints <= 0) {
@@ -253,10 +274,10 @@ export const DungeonThrowdown = {
 
       const movementRoll = random.D6(2);
       const movementTotal = movementRoll[0] + movementRoll[1];
-      currentPlayer.moveTiles = movementTotal;
-      console.log(
-        `${currentPlayer.name} rolled ${movementRoll[0]} and ${movementRoll[1]} for a total of ${movementTotal} movement tiles`
-      );
+      // currentPlayer.moveTiles = movementTotal;
+      // console.log(
+      //   `${currentPlayer.name} rolled ${movementRoll[0]} and ${movementRoll[1]} for a total of ${movementTotal} movement tiles`
+      // );
       G.movementDice = movementRoll;
 
       const occupiedTiles = G.tiles.map((tile, idx) => {
@@ -278,10 +299,9 @@ export const DungeonThrowdown = {
 
     onEnd: ({ G, ctx }) => {
       const currentPlayer = G.players[ctx.currentPlayer];
-      if (currentPlayer.isMoving) {
-        currentPlayer.isMoving = false;
-        currentPlayer.hasMoved = true;
-      }
+      currentPlayer.isMoving = false;
+      currentPlayer.hasMoved = false;
+      currentPlayer.hasDoneAction = false;
     },
 
     endIf: ({ G, ctx }) => {
@@ -317,7 +337,7 @@ export const DungeonThrowdown = {
   },
 };
 
-export function getBattleRoll(diceArray) {
+export function getBattleRoll(diceArray, type) {
   const dice = diceArray.map((die) => {
     if (die === 1) {
       return "blank";
@@ -327,7 +347,7 @@ export function getBattleRoll(diceArray) {
       return "atk";
     }
   });
-  return dice;
+  return { result: dice, type };
 }
 
 function boxPosition(occupiedTiles) {
