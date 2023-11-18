@@ -171,8 +171,10 @@ export const DungeonThrowdown = {
           G.battleDice.p1 = defenseRoll;
         }
 
+        let damage = 0;
+
         if (attackTotal - defenseTotal > 0) {
-          let damage = attackTotal - defenseTotal;
+          damage = attackTotal - defenseTotal;
           if (attackedPlayer.powerup) {
             damage -= 1;
           }
@@ -181,14 +183,14 @@ export const DungeonThrowdown = {
           const hitText = getHitTextArray(damage)[random.D4(1)[0] - 1];
 
           G.messages.game = `${currentPlayer.name} attacks ... and ${hitText} ${attackedPlayerName} takes ${damage} damage.`;
-          if (attackedPlayer.powerup) {
+          if (attackedPlayer.powerup && damage > 0) {
             G.messages.game += ` (The ${attackedPlayer.powerup.name} absorbs one damage, but is lost!)`;
           }
         } else {
           G.messages.game = `${currentPlayer.name} attacks ... and it misses!`;
         }
 
-        if (attackedPlayer.powerup) {
+        if (attackedPlayer.powerup && damage > 0) {
           console.log(
             `${attackedPlayerName} lost the ${attackedPlayer.powerup.name}!`
           );

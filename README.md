@@ -72,6 +72,7 @@ at a time, so open boxes strategically!
 - Persisting game state
 - Saved games associated with user accounts
 - Ability to move by single click to destination tile (rather than moving one tile at a time)
+- setTimeout() for certain game state updates for more intuitive grokking of game flow
 - Character customization
 - More boards with obstacles and different layouts
 - AI-powered enemies for "dungeon crawling" mode
