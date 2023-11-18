@@ -3,6 +3,10 @@ a {
   color: white;
 }
 
+img {
+  margin: 10px;
+}
+
 #landing-page {
   /* background-color: rgb(221, 196, 162); */
   display: flex;
@@ -127,6 +131,15 @@ a {
   align-self: center;
 }
 
+.game-message {
+  font-family: "Alegreya", cursive;
+  font-size: 24px;
+  color: white;
+  background-color: rgba(211, 211, 210, 0.2);
+  padding: 10px;
+  margin: 10px;
+}
+
 #board-display {
   font-family: Alegreya, serif;
   font-size: 120%;
@@ -220,7 +233,7 @@ a {
 .player-stats th {
   /* border: 1px solid rgb(0, 0, 0); */
   padding: 0;
-  width: 60px;
+  width: 70px;
 }
 
 .player-stats td {

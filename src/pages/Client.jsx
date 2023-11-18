@@ -10,7 +10,6 @@ import React, { useState, useEffect } from "react";
 import { Client } from "boardgame.io/react";
 import { DungeonThrowdown } from "../components/Game";
 import { Board } from "../components/Board";
-import NavBar from "../components/NavBar";
 
 const BoardGame = Client({
   game: DungeonThrowdown,

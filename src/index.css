@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Alegreya:wght@400;500;600&family=Cinzel:wght@400;500;600;700&family=MedievalSharp&family=Uncial+Antiqua&display=swap");
 
 body {
-  margin: 0;
+  /* margin: 0; */
   background-color: black;
   color: white;
   display: flex;

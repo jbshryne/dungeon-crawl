@@ -29,7 +29,7 @@ const Rules = () => {
       </p>
       <p>
         <b>YOUR TURN:</b> A turn consists of two phases, Movement and Action. To
-        move to an adjacent tile
+        move to an adjacent tile{" "}
         <em>(one above, below, or to the side of you)</em>, you can{" "}
         <GiArrowCursor /> click on that tile OR press the cooresponding{" "}
         <span style={{ fontSize: 24 }}>
@@ -44,9 +44,15 @@ const Rules = () => {
         </code>{" "}
         key. You may move up to the number of tiles indicated by the Movement
         Dice that are rolled as your turn starts. You can also take ONE action
-        per turn <em>(Attacking or Opening a Box)</em>. You can choose to move
-        and act in either order (or choose not to do either of them), but you
-        can't split up your movement around taking an action.
+        per turn <em>(Attacking or Opening a Box)</em>.
+        <ul>
+          <li>
+            You can choose to move and act in either order, but you can't split
+            up your movement around taking an action. Turns will end
+            automatically if you can't do anything else, but you can also choose
+            to end early with the "End Turn" button.
+          </li>
+        </ul>
       </p>
       <p>
         <b>COMBAT:</b> To attack your opponent, move to an adjacent tile and

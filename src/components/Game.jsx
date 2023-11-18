@@ -1,5 +1,5 @@
 // import { INVALID_MOVE } from "boardgame.io/core";
-import { calculateMoveTiles } from "./Board";
+import { calculateMoveTiles, getAdjacentTiles } from "./Board";
 
 const hero = {
   id: 0,
@@ -58,7 +58,7 @@ export const DungeonThrowdown = {
       .fill(monster.team, monster.position, monster.position + 1),
     players,
     messages: {
-      game: "",
+      game: "Let the Dungeon Throwdown begin!",
       p1: "",
       p2: "",
     },
@@ -97,6 +97,14 @@ export const DungeonThrowdown = {
       if (currentPlayer.moveTiles === 0) {
         currentPlayer.isMoving = false;
         currentPlayer.hasMoved = true;
+        if (
+          getAdjacentTiles(currentPosition, G.tiles.length).forEach((tile) => {
+            return tile === null;
+          }) &&
+          currentPlayer.hasDoneAction
+        ) {
+          events.endTurn();
+        }
       }
     },
 
@@ -148,9 +156,13 @@ export const DungeonThrowdown = {
         if (attackTotal - defenseTotal > 0) {
           attackedPlayer.hitPoints -= attackTotal - defenseTotal;
 
-          console.log(
-            `SUCCESS! ${attackedPlayerName} has ${attackedPlayer.hitPoints} now hit point(s)`
-          );
+          G.messages.game = `SUCCESSFULL ATTACK! ${attackedPlayerName} has ${
+            attackedPlayer.hitPoints
+          } now hit point(s)${
+            attackedPlayer.powerup
+              ? `  and has the ${attackedPlayer.powerup.name}!`
+              : ""
+          }`;
 
           if (attackedPlayer.powerup) {
             console.log(
@@ -161,18 +173,18 @@ export const DungeonThrowdown = {
             attackedPlayer.defenseBoost = 0;
           }
         } else {
-          console.log("Attack misses!");
+          G.messages.game = "The attack misses!";
         }
 
         if (attackedPlayer.hitPoints <= 0) {
           G.tiles[tileIdx] = null;
           attackedPlayer.position = null;
-          console.log(`${attackedPlayerName} is dead!`);
+          G.messages.game = `${attackedPlayerName} is defeated! ${currentPlayerName} WINS!`;
         }
       } else if (currentPlayerTeam === attackedPlayerTeam) {
         console.log("You can't attack your own team!");
       } else if (currentPlayer.hasDoneAction) {
-        console.log("You have already performed an action this turn!");
+        G.messages.game = "You have already performed an action this turn!";
       }
       if (currentPlayer.isMoving) {
         currentPlayer.isMoving = false;
@@ -202,14 +214,10 @@ export const DungeonThrowdown = {
         if (boxRollResult) {
           if (boxRollResult.type === "HP") {
             currentPlayer.hitPoints += boxRollResult.amount;
-            console.log(
-              `${currentPlayerName} finds a ${boxRollResult.name} and gains ${boxRollResult.amount} hit point!`
-            );
+            G.messages.game = `${currentPlayerName} finds a ${boxRollResult.name} and gains ${boxRollResult.amount} hit point!`;
           } else if (boxRollResult.type === "DMG") {
             opponent.hitPoints -= boxRollResult.amount;
-            console.log(
-              `${currentPlayerName} finds a ${boxRollResult.name} -- ${opponent.name} is struck and loses ${boxRollResult.amount} hit point!`
-            );
+            G.messages.game = `${currentPlayerName} finds a ${boxRollResult.name} -- ${opponent.name} is struck and loses ${boxRollResult.amount} hit point!`;
           } else if (boxRollResult.type === "ATK") {
             currentPlayer.powerup = boxRollResult;
             // reset any boosts from previous powerup
@@ -217,9 +225,7 @@ export const DungeonThrowdown = {
             currentPlayer.defenseBoost = 0;
 
             currentPlayer.attackBoost += boxRollResult.amount;
-            console.log(
-              `${currentPlayerName} finds a ${boxRollResult.name} and adds ${boxRollResult.amount} to attack dice!`
-            );
+            G.messages.game = `${currentPlayerName} finds a ${boxRollResult.name} and adds ${boxRollResult.amount} to attack dice!`;
           } else if (boxRollResult.type === "DEF") {
             currentPlayer.powerup = boxRollResult;
             // reset any boosts from previous powerup
@@ -227,15 +233,13 @@ export const DungeonThrowdown = {
             currentPlayer.defenseBoost = 0;
 
             currentPlayer.defenseBoost += boxRollResult.amount;
-            console.log(
-              `${currentPlayerName} finds a ${boxRollResult.name} and adds ${boxRollResult.amount} to defense dice!`
-            );
+            G.messages.game = `${currentPlayerName} finds a ${boxRollResult.name} and adds ${boxRollResult.amount} to defense dice!`;
           }
         } else {
-          console.log("The box is empty!");
+          G.messages.game = "The box is empty!";
         }
       } else {
-        console.log("Can't do that right now!");
+        G.messages.game = "Can't do that right now!";
       }
     },
   },
@@ -243,7 +247,6 @@ export const DungeonThrowdown = {
   turn: {
     onBegin: ({ G, ctx, random }) => {
       const currentPlayer = G.players[ctx.currentPlayer];
-      G.messages.game = `${currentPlayer.name}'s turn`;
       currentPlayer.isMoving = false;
       currentPlayer.hasMoved = false;
       currentPlayer.hasDoneAction = false;
