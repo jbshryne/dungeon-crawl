@@ -68,9 +68,10 @@ at a time, so open boxes strategically!
 
 ## Future Features
 
-- Using boardgame.io's integrated Socket.io functionality to allow for networked multiplayer
+- Using boardgame.io's integrated Socket.io functionality to allow for networked multiplayer mode
 - Persisting game state
 - Saved games associated with user accounts
+- Ability to move by single click to destination tile (rather than moving one tile at a time)
 - Character customization
-- More boards and items
+- More boards with obstacles and different layouts
 - AI-powered enemies for "dungeon crawling" mode
