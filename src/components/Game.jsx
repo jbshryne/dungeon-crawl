@@ -192,9 +192,9 @@ export const DungeonThrowdown = {
         }
 
         if (attackedPlayer.powerup && baseDamage > 0) {
-          console.log(
-            `${attackedPlayerName} lost the ${attackedPlayer.powerup.name}!`
-          );
+          // console.log(
+          //   `${attackedPlayerName} lost the ${attackedPlayer.powerup.name}!`
+          // );
           attackedPlayer.powerup = null;
           attackedPlayer.attackBoost = 0;
           attackedPlayer.defenseBoost = 0;
@@ -205,8 +205,8 @@ export const DungeonThrowdown = {
           attackedPlayer.position = null;
           G.messages.game = `${attackedPlayerName} is defeated! ${currentPlayerName} WINS!`;
         }
-      } else if (currentPlayerTeam === attackedPlayerTeam) {
-        console.log("You can't attack your own team!");
+        // } else if (currentPlayerTeam === attackedPlayerTeam) {
+        //   console.log("You can't attack your own team!");
       } else if (currentPlayer.hasDoneAction) {
         G.messages.game = "You have already performed an action this turn!";
       }

@@ -2,7 +2,7 @@
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import NavBar from "./components/NavBar";
-import AuthChecker from "./components/AuthChecker";
+// import AuthChecker from "./components/AuthChecker";
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import Client from "./pages/Client";
@@ -20,9 +20,10 @@ function App() {
           <Route
             path="/game"
             element={
-              <AuthChecker>
-                <Client />
-              </AuthChecker>
+              // TEMPORARILY DISABLING AUTH CHECKER FOR DEMOING PURPOSES
+              // <AuthChecker>
+              <Client />
+              // </AuthChecker>
             }
           />
         </Routes>
