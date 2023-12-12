@@ -198,14 +198,15 @@ export const DungeonThrowdown = {
           attackedPlayer.position = null;
           G.messages.game = `${attackedPlayerName} is defeated! ${currentPlayerName} WINS!`;
         }
+
+        if (currentPlayer.isMoving) {
+          currentPlayer.isMoving = false;
+          currentPlayer.hasMoved = true;
+        }
         // } else if (currentPlayerTeam === attackedPlayerTeam) {
         //   console.log("You can't attack your own team!");
       } else if (currentPlayer.hasDoneAction) {
         G.messages.game = "You have already performed an action this turn!";
-      }
-      if (currentPlayer.isMoving) {
-        currentPlayer.isMoving = false;
-        currentPlayer.hasMoved = true;
       }
     },
     openBox: ({ G, playerID, random, moves }, tileIdx) => {
@@ -312,7 +313,6 @@ export const DungeonThrowdown = {
         (currentPlayer.hasDoneAction ||
           getAdjacentTiles(currentPlayer.position, G.tiles.length).every(
             (tile) => {
-              console.log(tile, G.tiles[tile]);
               return G.tiles[tile] === null;
             }
           ))

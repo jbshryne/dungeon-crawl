@@ -166,16 +166,16 @@ export function Board({ ctx, G, moves, events }) {
         } else if (content === "BOX") {
           return <GiChest className="board-icon box-icon" />;
         } else {
-          return content;
+          return null;
         }
       };
 
       tiles.push(
         <td key={idx}>
           <div
-            className={`tile ${isAdjacent && "adjacent"} ${
-              idx === hoveredTile && "hovered"
-            } ${isOpponent && "opponent"} ${isItem && "item"}`}
+            className={`tile ${(isAdjacent && "adjacent") || ""} ${
+              (idx === hoveredTile && "hovered") || ""
+            } ${(isOpponent && "opponent") || ""} ${(isItem && "item") || ""}`}
             onClick={() => onClick(idx)}
             onMouseEnter={() => onTileHover(idx)}
             onMouseLeave={() => setHoveredTile(null)}
@@ -223,8 +223,12 @@ export function Board({ ctx, G, moves, events }) {
               <tr>
                 <th>Moves Left</th>
                 <th>Action Taken</th>
-                <th>Attack Dice</th>
-                <th>Defense Dice</th>
+                <th className={(player.attackBoost && "boosted") || ""}>
+                  Attack Dice
+                </th>
+                <th className={(player.defenseBoost && "boosted") || ""}>
+                  Defense Dice
+                </th>
                 <th>Hit Points</th>
               </tr>
             </thead>
@@ -232,8 +236,12 @@ export function Board({ ctx, G, moves, events }) {
               <tr>
                 <td>{movement}</td>
                 <td>{action ? <GiCheckMark style={{ size: 36 }} /> : ""}</td>
-                <td>{attackDice}</td>
-                <td>{defenseDice}</td>
+                <td className={(player.attackBoost && "boosted") || ""}>
+                  {attackDice}
+                </td>
+                <td className={(player.defenseBoost && "boosted") || ""}>
+                  {defenseDice}
+                </td>
                 <td>{hitPoints}</td>
               </tr>
             </tbody>

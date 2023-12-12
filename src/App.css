@@ -245,6 +245,10 @@ img {
   height: 48px;
 }
 
+.boosted {
+  color: rgb(165, 232, 141);
+}
+
 .movement-die-container {
   display: flex;
   flex-direction: row;
