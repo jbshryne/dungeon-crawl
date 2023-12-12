@@ -31,7 +31,7 @@ const Rules = () => {
         <b>YOUR TURN:</b> Each turn has two phases, a Movement and an Action. To
         move to an adjacent tile{" "}
         <em>(i.e. one above, below, or to the side of you)</em>, you can{" "}
-        <GiArrowCursor /> click on that tile OR press the cooresponding{" "}
+        <GiArrowCursor /> click on that tile OR press the corresponding{" "}
         <span style={{ fontSize: 24 }}>
           <LuArrowUpSquare />
           <LuArrowLeftSquare />

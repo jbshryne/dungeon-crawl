@@ -149,10 +149,12 @@ export function Board({ ctx, G, moves, events }) {
       const isOpponent =
         isAdjacent &&
         G.tiles[idx] !== null &&
+        !currentPlayer.hasDoneAction &&
         G.players.find((player) => G.tiles[idx] === player.team) &&
         G.players.find((player) => G.tiles[idx] === player.team) !==
           currentPlayer.team;
-      const isItem = isAdjacent && G.tiles[idx] === "BOX";
+      const isItem =
+        isAdjacent && !currentPlayer.hasDoneAction && G.tiles[idx] === "BOX";
 
       const tileContent = G.tiles[idx];
 
@@ -302,6 +304,7 @@ export function isAdjacentTile(newTile, refTile, boardSize) {
 }
 
 export function getAdjacentTiles(tileIdx, boardSize) {
+  console.log("getAdjacentTiles");
   const rowSize = Math.sqrt(boardSize);
   const sameRow = Math.floor(tileIdx / rowSize);
   const sameColumn = tileIdx % rowSize;
@@ -319,6 +322,8 @@ export function getAdjacentTiles(tileIdx, boardSize) {
   if (sameColumn < rowSize - 1) {
     adjacentTiles.push(tileIdx + 1);
   }
+
+  // console.log(adjacentTiles);
 
   return adjacentTiles;
 }
@@ -355,10 +360,7 @@ function renderMovementRoll(roll) {
     }
     if (die === 5) {
       return <GiDiceSixFacesFive key={idx} className="movement-die" />;
-    }
-    if (die === 6) {
-      return <GiDiceSixFacesSix key={idx} className="movement-die" />;
-    }
+    } else return <GiDiceSixFacesSix key={idx} className="movement-die" />;
   });
 }
 

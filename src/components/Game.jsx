@@ -109,13 +109,6 @@ export const DungeonThrowdown = {
       if (currentPlayer.moveTiles === 0) {
         currentPlayer.isMoving = false;
         currentPlayer.hasMoved = true;
-        if (
-          getAdjacentTiles(currentPosition, G.tiles.length).every((tile) => {
-            return tile === null;
-          })
-        ) {
-          events.endTurn();
-        }
       }
     },
 
@@ -215,7 +208,7 @@ export const DungeonThrowdown = {
         currentPlayer.hasMoved = true;
       }
     },
-    openBox: ({ G, playerID, random }, tileIdx) => {
+    openBox: ({ G, playerID, random, moves }, tileIdx) => {
       const currentPlayer = G.players[playerID];
       const currentPlayerName = currentPlayer.name;
       const currentPlayerTeam = currentPlayer.team;
@@ -263,6 +256,7 @@ export const DungeonThrowdown = {
           G.messages.game = "The box is empty!";
         }
       } else {
+        console.log(moves);
         G.messages.game = "Can't do that right now!";
       }
     },
@@ -286,6 +280,8 @@ export const DungeonThrowdown = {
       const occupiedTiles = G.tiles.map((tile, idx) => {
         if (tile !== null) {
           return idx;
+        } else {
+          return null;
         }
       });
 
@@ -305,6 +301,7 @@ export const DungeonThrowdown = {
       currentPlayer.isMoving = false;
       currentPlayer.hasMoved = false;
       currentPlayer.hasDoneAction = false;
+      currentPlayer.moveTiles = 0;
     },
 
     endIf: ({ G, ctx }) => {
@@ -312,12 +309,13 @@ export const DungeonThrowdown = {
       return (
         !currentPlayer.isMoving &&
         currentPlayer.hasMoved &&
-        currentPlayer.hasDoneAction
-        // || (
-        //   !currentPlayer.isMoving &&
-        //   currentPlayer.hasMoved &&
-        //   getAdjacentTiles(currentPlayer.position, G.tiles.length).length === 0
-        // )
+        (currentPlayer.hasDoneAction ||
+          getAdjacentTiles(currentPlayer.position, G.tiles.length).every(
+            (tile) => {
+              console.log(tile, G.tiles[tile]);
+              return G.tiles[tile] === null;
+            }
+          ))
       );
     },
   },

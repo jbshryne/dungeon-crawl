@@ -1,11 +1,3 @@
-// import { Client } from "boardgame.io/react";
-// import { DungeonThrowdown } from "../components/Game";
-// import { Board } from "../components/Board";
-
-// const ClientPage = Client({ game: DungeonThrowdown, board: Board });
-
-// export default ClientPage;
-
 import React, { useState, useEffect } from "react";
 import { Client } from "boardgame.io/react";
 import { DungeonThrowdown } from "../components/Game";
