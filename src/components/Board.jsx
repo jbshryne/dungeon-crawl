@@ -58,7 +58,7 @@ export function Board({ ctx, G, moves, events }) {
 
   const handleKeyPress = (event) => {
     const key = event.key.toLowerCase();
-    const movementKeys = [
+    const inputKeys = [
       "w",
       "a",
       "s",
@@ -67,10 +67,12 @@ export function Board({ ctx, G, moves, events }) {
       "arrowleft",
       "arrowdown",
       "arrowright",
-      "t",
+      // "t",
+      "e",
+      "enter",
     ];
 
-    if (movementKeys.includes(key)) {
+    if (inputKeys.includes(key)) {
       event.preventDefault(); // Prevent page scrolling on arrow key presses
 
       let newTile;
@@ -91,7 +93,11 @@ export function Board({ ctx, G, moves, events }) {
         case "arrowright":
           newTile = currentPosition + 1;
           break;
-        case "t":
+        case "e":
+        case "enter":
+          // case "t":
+          // case "r":
+          // case "u":
           events.endTurn();
           break;
         default:

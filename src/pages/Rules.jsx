@@ -49,10 +49,14 @@ const Rules = () => {
           <li>
             You can choose to move or act in either order, but you can't split
             up your movement around taking an action. Turns will end
-            automatically if you've fully moved and acted, but you can choose to
-            end at any time with the "End Turn" button (or pressing{" "}
+            automatically if you can't do anything else, but you can choose to
+            end at any time with the "End Turn" button (or by pressing{" "}
             <code>
-              <b>T</b>
+              <b>E</b>
+            </code>{" "}
+            or{" "}
+            <code>
+              <b>[ENTER]</b>
             </code>
             ).
           </li>

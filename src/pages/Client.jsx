@@ -6,6 +6,7 @@ import { Board } from "../components/Board";
 const BoardGame = Client({
   game: DungeonThrowdown,
   board: BoardDisplay,
+  // debug: false,
 });
 
 function BoardDisplay({ G, ctx, moves, events }) {
