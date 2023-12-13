@@ -67,7 +67,6 @@ export function Board({ ctx, G, moves, events }) {
       "arrowleft",
       "arrowdown",
       "arrowright",
-      // "t",
       "e",
       "enter",
     ];
@@ -95,9 +94,6 @@ export function Board({ ctx, G, moves, events }) {
           break;
         case "e":
         case "enter":
-          // case "t":
-          // case "r":
-          // case "u":
           events.endTurn();
           break;
         default:
@@ -107,6 +103,9 @@ export function Board({ ctx, G, moves, events }) {
       if (isAdjacentTile(newTile, currentPosition, boardTiles)) {
         if (G.tiles[newTile] === null) {
           moves.moveOneSquare(newTile);
+          // BUG: Opening a box then trying to move to that tile
+          // will act as if the box is still there
+          // (This does not happen when trying to move by mouse click)
         } else if (G.tiles[newTile] === "BOX") {
           moves.openBox(newTile);
         } else if (G.tiles[newTile].team !== currentPlayerTeam) {
