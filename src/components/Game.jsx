@@ -210,6 +210,7 @@ export const DungeonThrowdown = {
       }
     },
     openBox: ({ G, playerID, random, moves }, tileIdx) => {
+      console.log("tile", tileIdx, "contains", G.tiles[tileIdx]); // OUTPUT: tile 0 contains null
       const currentPlayer = G.players[playerID];
       const currentPlayerName = currentPlayer.name;
       const currentPlayerTeam = currentPlayer.team;
@@ -226,6 +227,7 @@ export const DungeonThrowdown = {
         console.log(currentPlayerName + " opens the box...");
         currentPlayer.hasDoneAction = true;
         G.tiles[tileIdx] = null;
+        console.log("box opened, tile is now", G.tiles[tileIdx]);
         const boxRoll = random.D12(1);
         const boxRollResult = getBoxRoll(boxRoll[0]);
 
@@ -265,6 +267,7 @@ export const DungeonThrowdown = {
 
   turn: {
     onBegin: ({ G, ctx, random }) => {
+      sessionStorage.removeItem("dungeon-throwdown_openedBox");
       const currentPlayer = G.players[ctx.currentPlayer];
       currentPlayer.isMoving = false;
       currentPlayer.hasMoved = false;

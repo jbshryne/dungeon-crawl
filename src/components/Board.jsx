@@ -102,12 +102,23 @@ export function Board({ ctx, G, moves, events }) {
 
       if (isAdjacentTile(newTile, currentPosition, boardTiles)) {
         if (G.tiles[newTile] === null) {
-          moves.moveOneSquare(newTile);
           // BUG: Opening a box then trying to move to that tile
           // will act as if the box is still there
           // (This does not happen when trying to move by mouse click)
+          moves.moveOneSquare(newTile);
         } else if (G.tiles[newTile] === "BOX") {
-          moves.openBox(newTile);
+          // console.log("tile", newTile, "contains", G.tiles[newTile]); // OUTPUT: tile 0 contains BOX
+          const openedBox = sessionStorage.getItem(
+            "dungeon-throwdown_openedBox"
+          );
+          console.log("openedBox", openedBox);
+
+          if (parseInt(openedBox) === newTile) {
+            moves.moveOneSquare(newTile);
+          } else {
+            moves.openBox(newTile);
+            sessionStorage.setItem("dungeon-throwdown_openedBox", newTile);
+          }
         } else if (G.tiles[newTile].team !== currentPlayerTeam) {
           moves.attack(newTile);
         }
@@ -121,6 +132,7 @@ export function Board({ ctx, G, moves, events }) {
         moves.moveOneSquare(tileIdx);
       } else if (G.tiles[tileIdx] === "BOX") {
         moves.openBox(tileIdx);
+        sessionStorage.setItem("dungeon-throwdown_openedBox", tileIdx);
       } else if (G.tiles[tileIdx].team !== currentPlayerTeam) {
         moves.attack(tileIdx);
       }
