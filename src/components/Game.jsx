@@ -148,14 +148,6 @@ export const DungeonThrowdown = {
           (die) => die === "def"
         ).length;
 
-        // if (isPlayer1) {
-        //   G.battleDice.p1 = { type: "atk", roll: attackRoll };
-        //   G.battleDice.p2 = { type: "def", roll: defenseRoll };
-        // } else {
-        //   G.battleDice.p2 = { type: "atk", roll: attackRoll };
-        //   G.battleDice.p1 = { type: "def", roll: defenseRoll };
-        // }
-
         if (isPlayer1) {
           G.battleDice.p1 = attackRoll;
           G.battleDice.p2 = defenseRoll;
@@ -236,14 +228,25 @@ export const DungeonThrowdown = {
             currentPlayer.hitPoints += boxRollResult.amount;
             G.messages.game = `${currentPlayerName} finds a ${boxRollResult.name} and gains ${boxRollResult.amount} hit point!`;
           } else if (boxRollResult.type === "DMG") {
-            opponent.hitPoints -= boxRollResult.amount;
-            G.messages.game = `${currentPlayerName} finds a ${boxRollResult.name} -- ${opponent.name} is struck and loses ${boxRollResult.amount} hit point!`;
+            if (opponent.powerup) {
+              opponent.powerup = null;
+              opponent.attackBoost = 0;
+              opponent.defenseBoost = 0;
+              G.messages.game = `${currentPlayerName} finds a ${boxRollResult.name} -- ${opponent.name}'s ${opponent.powerup.name} absorbs the damage, but is lost!`;
+            } else {
+              opponent.hitPoints -= boxRollResult.amount;
+              G.messages.game = `${currentPlayerName} finds a ${boxRollResult.name} -- ${opponent.name} is struck and loses ${boxRollResult.amount} hit point!`;
+              if (opponent.hitPoints <= 0) {
+                G.tiles[opponent.position] = null;
+                opponent.position = null;
+                G.messages.game += ` ${currentPlayerName} WINS!`;
+              }
+            }
           } else if (boxRollResult.type === "ATK") {
             currentPlayer.powerup = boxRollResult;
             // reset any boosts from previous powerup
             currentPlayer.attackBoost = 0;
             currentPlayer.defenseBoost = 0;
-
             currentPlayer.attackBoost += boxRollResult.amount;
             G.messages.game = `${currentPlayerName} finds a ${boxRollResult.name} and adds ${boxRollResult.amount} to attack dice!`;
           } else if (boxRollResult.type === "DEF") {
