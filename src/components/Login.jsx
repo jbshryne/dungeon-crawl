@@ -9,7 +9,7 @@ const Login = () => {
     password: "",
   });
 
-  const [message, setMessage] = useState("LOGIN");
+  const [message, setMessage] = useState("Login currently disabled");
 
   const handleInputChange = (event) => {
     setFormData((currentFormData) => {
@@ -57,14 +57,18 @@ const Login = () => {
           name="username"
           placeholder="Username"
           onChange={handleInputChange}
+          disabled={true}
         />
         <input
           type="password"
           name="password"
           placeholder="Password"
           onChange={handleInputChange}
+          disabled={true}
         />
-        <button type="submit">Login</button>
+        <button type="submit" disabled={true}>
+          Login
+        </button>
       </form>
       <p></p>
     </div>

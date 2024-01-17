@@ -128,9 +128,9 @@ export const DungeonThrowdown = {
         currentPlayerTeam !== attackedPlayerTeam &&
         !currentPlayer.hasDoneAction
       ) {
-        console.log(
-          currentPlayerName + " attacks " + attackedPlayerName + "..."
-        );
+        // console.log(
+        //   currentPlayerName + " attacks " + attackedPlayerName + "..."
+        // );
         currentPlayer.hasDoneAction = true;
         const attackRoll = getBattleRoll(
           random.D6(currentPlayer.attackDice + currentPlayer.attackBoost),
@@ -201,8 +201,8 @@ export const DungeonThrowdown = {
         G.messages.game = "You have already performed an action this turn!";
       }
     },
-    openBox: ({ G, playerID, random, moves }, tileIdx) => {
-      console.log("tile", tileIdx, "contains", G.tiles[tileIdx]); // OUTPUT: tile 0 contains null
+    openBox: ({ G, playerID, random }, tileIdx) => {
+      // console.log("tile", tileIdx, "contains", G.tiles[tileIdx]); // OUTPUT: tile 0 contains null
       const currentPlayer = G.players[playerID];
       const currentPlayerName = currentPlayer.name;
       const currentPlayerTeam = currentPlayer.team;
@@ -216,12 +216,14 @@ export const DungeonThrowdown = {
           currentPlayer.isMoving = false;
           currentPlayer.hasMoved = true;
         }
-        console.log(currentPlayerName + " opens the box...");
+        // console.log(currentPlayerName + " opens the box...");
         currentPlayer.hasDoneAction = true;
         G.tiles[tileIdx] = null;
-        console.log("box opened, tile is now", G.tiles[tileIdx]);
+        // console.log("box opened, tile is now", G.tiles[tileIdx]);
         const boxRoll = random.D12(1);
         const boxRollResult = getBoxRoll(boxRoll[0]);
+
+        // console.log("boxRollResult", boxRollResult);
 
         if (boxRollResult) {
           if (boxRollResult.type === "HP") {
@@ -247,6 +249,7 @@ export const DungeonThrowdown = {
             // reset any boosts from previous powerup
             currentPlayer.attackBoost = 0;
             currentPlayer.defenseBoost = 0;
+
             currentPlayer.attackBoost += boxRollResult.amount;
             G.messages.game = `${currentPlayerName} finds a ${boxRollResult.name} and adds ${boxRollResult.amount} to attack dice!`;
           } else if (boxRollResult.type === "DEF") {
@@ -262,7 +265,7 @@ export const DungeonThrowdown = {
           G.messages.game = "The box is empty!";
         }
       } else {
-        console.log(moves);
+        // console.log(moves);
         G.messages.game = "Can't do that right now!";
       }
     },
@@ -338,7 +341,7 @@ export const DungeonThrowdown = {
       0
     );
     if (otherTeamHitPoints === 0 && currentPlayer.hasDoneAction) {
-      console.log(`Team ${currentTeam} wins!`);
+      // console.log(`Team ${currentTeam} wins!`);
       return { winner: currentTeam };
     }
   },
@@ -367,6 +370,7 @@ function boxPosition(occupiedTiles) {
 }
 
 export function getBoxRoll(result) {
+  // console.log("getBoxRoll", result);
   if (result === 12) {
     return { name: "Scroll of Lightning", type: "DMG", amount: 1 };
   } else if (result === 11) {

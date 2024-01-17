@@ -7,7 +7,7 @@ const Signup = () => {
     confirmPassword: "",
   });
 
-  const [signupStatus, setSignupStatus] = useState("CREATE ACCOUNT");
+  const [signupStatus, setSignupStatus] = useState("Signup currently disabled");
 
   const handleSignup = async (event) => {
     event.preventDefault();
@@ -62,20 +62,25 @@ const Signup = () => {
           name="username"
           placeholder="Username"
           onChange={handleInputChange}
+          disabled={true}
         />
         <input
           type="password"
           name="password"
           placeholder="Password"
           onChange={handleInputChange}
+          disabled={true}
         />
         <input
           type="password"
           name="confirmPassword"
           placeholder="Confirm Password"
           onChange={handleInputChange}
+          disabled={true}
         />
-        <button type="submit">Signup</button>
+        <button type="submit" disabled={true}>
+          Signup
+        </button>
       </form>
     </div>
   );

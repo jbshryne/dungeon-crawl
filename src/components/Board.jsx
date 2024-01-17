@@ -111,7 +111,7 @@ export function Board({ ctx, G, moves, events }) {
           const openedBox = sessionStorage.getItem(
             "dungeon-throwdown_openedBox"
           );
-          console.log("openedBox", openedBox);
+          // console.log("openedBox", openedBox);
 
           if (parseInt(openedBox) === newTile) {
             moves.moveOneSquare(newTile);
@@ -329,7 +329,7 @@ export function isAdjacentTile(newTile, refTile, boardSize) {
 }
 
 export function getAdjacentTiles(tileIdx, boardSize) {
-  console.log("getAdjacentTiles");
+  // console.log("getAdjacentTiles");
   const rowSize = Math.sqrt(boardSize);
   const sameRow = Math.floor(tileIdx / rowSize);
   const sameColumn = tileIdx % rowSize;
