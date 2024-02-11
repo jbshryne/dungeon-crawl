@@ -84,6 +84,16 @@ img {
   padding: 0 10px;
 }
 
+#canvas-page {
+  background-color: rgb(63, 63, 69);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* justify-content: center; */
+  height: 95vh;
+  width: 100vw;
+}
+
 .rules-page {
   display: flex;
   flex-direction: column;
@@ -110,7 +120,8 @@ img {
   margin: 0px 10px;
 }
 
-.rules-page p {
+.rules-page p,
+ul {
   font-family: Alegreya, serif;
   font-weight: 500;
   width: 90vw;

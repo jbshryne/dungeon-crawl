@@ -45,23 +45,23 @@ const Rules = () => {
         ) key. The max number of tiles you can move each turn is determined by
         your Movement Roll. You can also choose to do ONE action each turn, like
         Attacking or Opening a Box.
-        <ul>
-          <li>
-            You can choose to move or act in either order, but you can't split
-            up your movement around taking an action. Turns will end
-            automatically if you can't do anything else, but you can choose to
-            end at any time with the "End Turn" button (or by pressing{" "}
-            <code>
-              <b>E</b>
-            </code>{" "}
-            or{" "}
-            <code>
-              <b>[ENTER]</b>
-            </code>
-            ).
-          </li>
-        </ul>
       </p>
+      <ul>
+        <li>
+          You can choose to move or act in either order, but you can't split up
+          your movement around taking an action. Turns will end automatically if
+          you can't do anything else, but you can choose to end at any time with
+          the "End Turn" button (or by pressing{" "}
+          <code>
+            <b>E</b>
+          </code>{" "}
+          or{" "}
+          <code>
+            <b>[ENTER]</b>
+          </code>
+          ).
+        </li>
+      </ul>
       <p>
         <b>COMBAT:</b> To attack your opponent, move to an adjacent tile and
         click on their tile. Each of you then rolls Battle Dice, equal to your

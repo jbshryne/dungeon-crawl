@@ -94,11 +94,11 @@ export const DungeonThrowdown = {
     },
 
     moveOneSquare: ({ G, events, playerID }, tileIdx) => {
+      console.log("playerID", playerID);
       const currentPlayer = G.players[playerID];
       const currentPosition = currentPlayer.position;
       const currentPlayerName = currentPlayer.name;
 
-      // console.log(getAdjacentTiles(currentPosition, G.tiles.length));
       if (currentPlayer.moveTiles > 0) {
         G.tiles[currentPosition] = null;
         G.tiles[tileIdx] = currentPlayerName;
@@ -128,9 +128,6 @@ export const DungeonThrowdown = {
         currentPlayerTeam !== attackedPlayerTeam &&
         !currentPlayer.hasDoneAction
       ) {
-        // console.log(
-        //   currentPlayerName + " attacks " + attackedPlayerName + "..."
-        // );
         currentPlayer.hasDoneAction = true;
         const attackRoll = getBattleRoll(
           random.D6(currentPlayer.attackDice + currentPlayer.attackBoost),
@@ -177,9 +174,6 @@ export const DungeonThrowdown = {
         }
 
         if (attackedPlayer.powerup && baseDamage > 0) {
-          // console.log(
-          //   `${attackedPlayerName} lost the ${attackedPlayer.powerup.name}!`
-          // );
           attackedPlayer.powerup = null;
           attackedPlayer.attackBoost = 0;
           attackedPlayer.defenseBoost = 0;
@@ -202,7 +196,6 @@ export const DungeonThrowdown = {
       }
     },
     openBox: ({ G, playerID, random }, tileIdx) => {
-      // console.log("tile", tileIdx, "contains", G.tiles[tileIdx]); // OUTPUT: tile 0 contains null
       const currentPlayer = G.players[playerID];
       const currentPlayerName = currentPlayer.name;
       const currentPlayerTeam = currentPlayer.team;
@@ -216,14 +209,10 @@ export const DungeonThrowdown = {
           currentPlayer.isMoving = false;
           currentPlayer.hasMoved = true;
         }
-        // console.log(currentPlayerName + " opens the box...");
         currentPlayer.hasDoneAction = true;
         G.tiles[tileIdx] = null;
-        // console.log("box opened, tile is now", G.tiles[tileIdx]);
         const boxRoll = random.D12(1);
         const boxRollResult = getBoxRoll(boxRoll[0]);
-
-        // console.log("boxRollResult", boxRollResult);
 
         if (boxRollResult) {
           if (boxRollResult.type === "HP") {
@@ -265,7 +254,6 @@ export const DungeonThrowdown = {
           G.messages.game = "The box is empty!";
         }
       } else {
-        // console.log(moves);
         G.messages.game = "Can't do that right now!";
       }
     },

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+// import { gsap } from "gsap";
 import BattleDie from "./BattleDie";
 import {
   GiFishMonster,
@@ -14,17 +15,22 @@ import {
 } from "react-icons/gi";
 
 export function Board({ ctx, G, moves, events }) {
+  // declare state variables
+  // console.log("gsap", gsap);
   const [p1Status, setP1Status] = useState(G.messages.p1);
   const [p2Status, setP2Status] = useState(G.messages.p2);
   const [p1BattleDice, setP1BattleDice] = useState(G.battleDice.p1);
   const [p2BattleDice, setP2BattleDice] = useState(G.battleDice.p2);
   const [movementRoll, setMovementRoll] = useState([]);
   const [hoveredTile, setHoveredTile] = useState(null);
+
+  // declare variables
   const boardTiles = G.tiles.length;
   const currentPlayer = G.players[ctx.currentPlayer];
   const currentPosition = currentPlayer.position;
   const currentPlayerTeam = currentPlayer.team;
 
+  // update state variables
   useEffect(() => {
     setP1Status(G.messages.p1);
   }, [G.messages.p1]);
@@ -45,17 +51,7 @@ export function Board({ ctx, G, moves, events }) {
     setMovementRoll(G.movementDice);
   }, [G.movementDice]);
 
-  // if (
-  //   currentPlayer.hasDoneAction & currentPlayer.hasMoved &&
-  //   !currentPlayer.isMoving
-  // ) {
-  //   console.log("End turn");
-  //   events.endTurn();
-  //   // currentPlayer.hasMoved = false;
-  //   // currentPlayer.hasDoneAction = false;
-  //   setTimeout(() => {}, 1000);
-  // }
-
+  // event handlers
   const handleKeyPress = (event) => {
     const key = event.key.toLowerCase();
     const inputKeys = [
@@ -147,6 +143,7 @@ export function Board({ ctx, G, moves, events }) {
     }
   };
 
+  // event listeners
   useEffect(() => {
     document.addEventListener("keydown", handleKeyPress);
 
@@ -156,6 +153,7 @@ export function Board({ ctx, G, moves, events }) {
     // eslint-disable-next-line
   }, [currentPosition, boardTiles, moves]);
 
+  // render the board
   let tbody = [];
   for (let i = 0; i < Math.sqrt(boardTiles); i++) {
     let tiles = [];
@@ -206,6 +204,7 @@ export function Board({ ctx, G, moves, events }) {
     tbody.push(<tr key={i}>{tiles}</tr>);
   }
 
+  // info & status panel
   const PlayerPanel = ({ player, status, battleDice, movementDice }) => {
     const name = player.name;
     const hitPoints = player.hitPoints;
@@ -329,7 +328,6 @@ export function isAdjacentTile(newTile, refTile, boardSize) {
 }
 
 export function getAdjacentTiles(tileIdx, boardSize) {
-  // console.log("getAdjacentTiles");
   const rowSize = Math.sqrt(boardSize);
   const sameRow = Math.floor(tileIdx / rowSize);
   const sameColumn = tileIdx % rowSize;
