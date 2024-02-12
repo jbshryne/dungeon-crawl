@@ -14,7 +14,7 @@ import {
   GiChest,
 } from "react-icons/gi";
 
-export function Board({ ctx, G, moves, events }) {
+export function Board({ ctx, G, moves, events, playerID, isMultiplayer }) {
   // declare state variables
   // console.log("gsap", gsap);
   const [p1Status, setP1Status] = useState(G.messages.p1);
@@ -213,10 +213,20 @@ export function Board({ ctx, G, moves, events }) {
     const movement = player.moveTiles;
     const action = player.hasDoneAction;
     const powerup = player.powerup;
+
     const isCurrentPlayer = currentPlayer.name === name;
+    let isActivePlayer;
+    if (isMultiplayer) {
+      console.log("playerID", playerID);
+      console.log("ctx.currentPlayer", ctx.currentPlayer);
+      isActivePlayer =
+        currentPlayer.name === player.name && playerID === ctx.currentPlayer;
+    } else {
+      isActivePlayer = isCurrentPlayer;
+    }
 
     return (
-      <div className={`player-panel ${isCurrentPlayer && "active"}`}>
+      <div className={`player-panel ${isActivePlayer && "active"}`}>
         <section className="player-status-section">
           <p className="player-name">
             {name === "Quester" ? (
@@ -281,7 +291,7 @@ export function Board({ ctx, G, moves, events }) {
         <section>
           <button
             onClick={() => events.endTurn()}
-            className={currentPlayer.name !== name ? "disabled" : ""}
+            className={!isActivePlayer ? "disabled" : ""}
           >
             End Turn
           </button>

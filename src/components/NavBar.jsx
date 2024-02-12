@@ -17,7 +17,10 @@ const NavBar = () => {
       </Link>
       <section>
         <Link to="/game" className="nav-bar-item">
-          <span>GAME</span>
+          <span>PLAY GAME</span>
+        </Link>
+        <Link to="/select" className="nav-bar-item">
+          <span>MULTIPLAYER</span>
         </Link>
         <Link to="/rules" className="nav-bar-item">
           <span>HOW TO PLAY</span>

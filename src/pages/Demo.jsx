@@ -6,11 +6,10 @@ import { Board } from "../components/Board";
 
 const Multiplayer = Client({
   game: DungeonThrowdown,
-  //   numPlayers: 2,
   board: BoardDisplay,
+  debug: false,
+  //   numPlayers: 2,
   //   multiplayer: SocketIO({ server: "localhost:8000" }),
-
-  // debug: false,
 });
 
 function BoardDisplay({ G, ctx, moves, events, playerID }) {

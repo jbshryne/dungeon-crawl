@@ -1,4 +1,3 @@
-// import { Outlet } from "react-router-dom";
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import NavBar from "./components/NavBar";
@@ -28,9 +27,9 @@ function App() {
               // </AuthChecker>
             }
           />
-          <Route path="/select-avatar" element={<SelectAvatar />} />
-          <Route path="/game/quester" element={<Multiplayer playerID="0" />} />
-          <Route path="/game/monster" element={<Multiplayer playerID="1" />} />
+          <Route path="/select" element={<SelectAvatar />} />
+          <Route path="/game/0" element={<Multiplayer playerID="0" />} />
+          <Route path="/game/1" element={<Multiplayer playerID="1" />} />
         </Routes>
       </main>
     </div>

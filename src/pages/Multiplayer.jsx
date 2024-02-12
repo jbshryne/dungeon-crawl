@@ -9,8 +9,7 @@ const Multiplayer = Client({
   numPlayers: 2,
   board: BoardDisplay,
   multiplayer: SocketIO({ server: process.env.REACT_APP_SERVER }),
-
-  // debug: false,
+  debug: false,
 });
 
 function BoardDisplay({ G, ctx, moves, events, playerID }) {
@@ -26,7 +25,14 @@ function BoardDisplay({ G, ctx, moves, events, playerID }) {
   return (
     <div id="board-display">
       <p className="game-message">{gameMessage}</p>
-      <Board G={G} ctx={ctx} moves={moves} events={events} />
+      <Board
+        G={G}
+        ctx={ctx}
+        moves={moves}
+        events={events}
+        playerID={playerID}
+        isMultiplayer={true}
+      />
     </div>
   );
 }
