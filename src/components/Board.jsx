@@ -15,7 +15,15 @@ import {
 } from "react-icons/gi";
 import PF from "pathfinding";
 
-export function Board({ ctx, G, moves, events, playerID, isMultiplayer }) {
+export function Board({
+  ctx,
+  G,
+  moves,
+  events,
+  playerID,
+  isMultiplayer,
+  reset,
+}) {
   // declare state variables
   // console.log("gsap", gsap);
   const [p1Status, setP1Status] = useState(G.messages.p1);
@@ -65,6 +73,7 @@ export function Board({ ctx, G, moves, events, playerID, isMultiplayer }) {
       // "arrowleft",
       // "arrowdown",
       // "arrowright",
+      "r",
       "e",
       "enter",
     ];
@@ -94,6 +103,8 @@ export function Board({ ctx, G, moves, events, playerID, isMultiplayer }) {
         case "enter":
           events.endTurn();
           break;
+        case "r":
+          reset();
         default:
           break;
       }
