@@ -13,6 +13,7 @@ import {
   GiCheckMark,
   GiChest,
 } from "react-icons/gi";
+import PF from "pathfinding";
 
 export function Board({ ctx, G, moves, events, playerID, isMultiplayer }) {
   // declare state variables
@@ -23,6 +24,7 @@ export function Board({ ctx, G, moves, events, playerID, isMultiplayer }) {
   const [p2BattleDice, setP2BattleDice] = useState(G.battleDice.p2);
   const [movementRoll, setMovementRoll] = useState([]);
   const [hoveredTile, setHoveredTile] = useState(null);
+  const [pathTiles, setPathTiles] = useState([]);
 
   // declare variables
   const boardTiles = G.tiles.length;
@@ -55,14 +57,14 @@ export function Board({ ctx, G, moves, events, playerID, isMultiplayer }) {
   const handleKeyPress = (event) => {
     const key = event.key.toLowerCase();
     const inputKeys = [
-      "w",
-      "a",
-      "s",
-      "d",
-      "arrowup",
-      "arrowleft",
-      "arrowdown",
-      "arrowright",
+      // "w",
+      // "a",
+      // "s",
+      // "d",
+      // "arrowup",
+      // "arrowleft",
+      // "arrowdown",
+      // "arrowright",
       "e",
       "enter",
     ];
@@ -70,24 +72,24 @@ export function Board({ ctx, G, moves, events, playerID, isMultiplayer }) {
     if (inputKeys.includes(key)) {
       event.preventDefault(); // Prevent page scrolling on arrow key presses
 
-      let newTile;
+      // let newTile;
       switch (key) {
-        case "w":
-        case "arrowup":
-          newTile = currentPosition - Math.sqrt(boardTiles);
-          break;
-        case "a":
-        case "arrowleft":
-          newTile = currentPosition - 1;
-          break;
-        case "s":
-        case "arrowdown":
-          newTile = currentPosition + Math.sqrt(boardTiles);
-          break;
-        case "d":
-        case "arrowright":
-          newTile = currentPosition + 1;
-          break;
+        // case "w":
+        // case "arrowup":
+        //   newTile = currentPosition - Math.sqrt(boardTiles);
+        //   break;
+        // case "a":
+        // case "arrowleft":
+        //   newTile = currentPosition - 1;
+        //   break;
+        // case "s":
+        // case "arrowdown":
+        //   newTile = currentPosition + Math.sqrt(boardTiles);
+        //   break;
+        // case "d":
+        // case "arrowright":
+        //   newTile = currentPosition + 1;
+        //   break;
         case "e":
         case "enter":
           events.endTurn();
@@ -96,54 +98,80 @@ export function Board({ ctx, G, moves, events, playerID, isMultiplayer }) {
           break;
       }
 
-      if (isAdjacentTile(newTile, currentPosition, boardTiles)) {
-        if (G.tiles[newTile] === null) {
-          // BUG: Opening a box then trying to move to that tile
-          // will act as if the box is still there
-          // (This does not happen when trying to move by mouse click)
-          moves.moveOneSquare(newTile);
-        } else if (G.tiles[newTile] === "BOX") {
-          // console.log("tile", newTile, "contains", G.tiles[newTile]); // OUTPUT: tile 0 contains BOX
-          const openedBox = sessionStorage.getItem(
-            "dungeon-throwdown_openedBox"
-          );
-          // console.log("openedBox", openedBox);
+      //     if (isAdjacentTile(newTile, currentPosition, boardTiles)) {
+      //       if (G.tiles[newTile] === null) {
+      //         // BUG: Opening a box then trying to move to that tile
+      //         // will act as if the box is still there
+      //         // (This does not happen when trying to move by mouse click)
+      //         moves.moveOneSquare(newTile);
+      //       } else if (G.tiles[newTile] === "BOX") {
+      //         // console.log("tile", newTile, "contains", G.tiles[newTile]); // OUTPUT: tile 0 contains BOX
+      //         const openedBox = sessionStorage.getItem(
+      //           "dungeon-throwdown_openedBox"
+      //         );
+      //         // console.log("openedBox", openedBox);
 
-          if (parseInt(openedBox) === newTile) {
-            moves.moveOneSquare(newTile);
-          } else {
-            moves.openBox(newTile);
-            sessionStorage.setItem("dungeon-throwdown_openedBox", newTile);
-          }
-        } else if (G.tiles[newTile].team !== currentPlayerTeam) {
-          moves.attack(newTile);
-        }
-      }
+      //         if (parseInt(openedBox) === newTile) {
+      //           moves.moveOneSquare(newTile);
+      //         } else {
+      //           moves.openBox(newTile);
+      //           sessionStorage.setItem("dungeon-throwdown_openedBox", newTile);
+      //         }
+      //       } else if (G.tiles[newTile].team !== currentPlayerTeam) {
+      //         moves.attack(newTile);
+      //       }
+      //     }
     }
   };
 
   const onClick = (tileIdx) => {
+    const moveTiles = calculateMoveTiles(
+      G,
+      currentPosition,
+      tileIdx,
+      boardTiles
+    );
     if (isAdjacentTile(tileIdx, currentPosition, boardTiles)) {
-      if (G.tiles[tileIdx] === null) {
-        moves.moveOneSquare(tileIdx);
-      } else if (G.tiles[tileIdx] === "BOX") {
+      if (G.tiles[tileIdx] === "BOX") {
         moves.openBox(tileIdx);
         sessionStorage.setItem("dungeon-throwdown_openedBox", tileIdx);
-      } else if (G.tiles[tileIdx].team !== currentPlayerTeam) {
+      } else if (
+        G.tiles[tileIdx] &&
+        G.tiles[tileIdx].team !== currentPlayerTeam
+      ) {
         moves.attack(tileIdx);
+      } else {
+        moves.moveOneSquare(tileIdx);
       }
+    } else {
+      console.log("moveTiles", moveTiles);
+      if (G.tiles[tileIdx] === null)
+        moves.toNewTile(tileIdx, moveTiles.distance);
     }
   };
 
   const onTileHover = (tileIdx) => {
-    if (isAdjacentTile(tileIdx, currentPosition, boardTiles)) {
-      setHoveredTile(tileIdx);
+    let isActivePlayer;
+    if (isMultiplayer) {
+      isActivePlayer = playerID === ctx.currentPlayer;
     } else {
-      setHoveredTile(null);
+      isActivePlayer = true;
+    }
+
+    const moveInfo = calculateMoveTiles(
+      G,
+      currentPosition,
+      tileIdx,
+      boardTiles
+    );
+    if (currentPlayer.moveTiles >= moveInfo.path.length - 1 && isActivePlayer) {
+      setPathTiles(moveInfo.path);
+      if (moveInfo.path.includes(tileIdx)) setHoveredTile(tileIdx);
+      console.log("tileIdx in onTileHover", tileIdx);
     }
   };
 
-  // event listeners
+  // // event listeners
   useEffect(() => {
     document.addEventListener("keydown", handleKeyPress);
 
@@ -188,12 +216,15 @@ export function Board({ ctx, G, moves, events, playerID, isMultiplayer }) {
       tiles.push(
         <td key={idx}>
           <div
-            className={`tile ${(isAdjacent && "adjacent") || ""} ${
-              (idx === hoveredTile && "hovered") || ""
+            className={`tile ${(hoveredTile === idx && "adjacent") || ""} ${
+              (pathTiles.includes(idx) && "hovered") || ""
             } ${(isOpponent && "opponent") || ""} ${(isItem && "item") || ""}`}
             onClick={() => onClick(idx)}
             onMouseEnter={() => onTileHover(idx)}
-            onMouseLeave={() => setHoveredTile(null)}
+            onMouseLeave={() => {
+              setHoveredTile(null);
+              setPathTiles([]);
+            }}
           >
             {/* {G.tiles[idx]} */}
             {renderTileContent(tileContent)}
@@ -217,8 +248,6 @@ export function Board({ ctx, G, moves, events, playerID, isMultiplayer }) {
     const isCurrentPlayer = currentPlayer.name === name;
     let isActivePlayer;
     if (isMultiplayer) {
-      console.log("playerID", playerID);
-      console.log("ctx.currentPlayer", ctx.currentPlayer);
       isActivePlayer =
         currentPlayer.name === player.name && playerID === ctx.currentPlayer;
     } else {
@@ -288,14 +317,12 @@ export function Board({ ctx, G, moves, events, playerID, isMultiplayer }) {
             <i>(+{powerup.amount} to Defense Dice)</i>
           )}
         </span>
-        <section>
-          <button
-            onClick={() => events.endTurn()}
-            className={!isActivePlayer ? "disabled" : ""}
-          >
-            End Turn
-          </button>
-        </section>
+        <button
+          onClick={() => events.endTurn()}
+          className={!isActivePlayer ? "disabled" : ""}
+        >
+          End Turn
+        </button>
       </div>
     );
   };
@@ -337,44 +364,61 @@ export function isAdjacentTile(newTile, refTile, boardSize) {
   );
 }
 
-export function getAdjacentTiles(tileIdx, boardSize) {
-  const rowSize = Math.sqrt(boardSize);
-  const sameRow = Math.floor(tileIdx / rowSize);
-  const sameColumn = tileIdx % rowSize;
-  const adjacentTiles = [];
-
-  if (sameRow > 0) {
-    adjacentTiles.push(tileIdx - rowSize);
-  }
-  if (sameRow < rowSize - 1) {
-    adjacentTiles.push(tileIdx + rowSize);
-  }
-  if (sameColumn > 0) {
-    adjacentTiles.push(tileIdx - 1);
-  }
-  if (sameColumn < rowSize - 1) {
-    adjacentTiles.push(tileIdx + 1);
-  }
-
-  // console.log(adjacentTiles);
-
-  return adjacentTiles;
-}
-
-export function calculateMoveTiles(startTile, targetTile, boardSize) {
+export function calculateMoveTiles(G, startTile, targetTile, boardSize) {
   const rowSize = Math.sqrt(boardSize);
 
-  // Get the x, y coordinates of the start and target tiles
   const start = { x: Math.floor(startTile / rowSize), y: startTile % rowSize };
   const target = {
     x: Math.floor(targetTile / rowSize),
     y: targetTile % rowSize,
   };
 
-  // Calculate the Manhattan distance
-  const distance = Math.abs(start.x - target.x) + Math.abs(start.y - target.y);
+  const occupiedTiles = [];
+  G.tiles.forEach((tile, idx) => {
+    if (tile !== null) {
+      occupiedTiles.push(idx);
+    }
+  });
 
-  return distance;
+  const path = findPath(start, target, rowSize, occupiedTiles);
+
+  // console.log("path from findAPath", path);
+
+  if (!path) {
+    console.log("No valid path found");
+    return { moveTiles: [] };
+  }
+
+  // const distance = path.length - 1;
+
+  return { path, distance: path.length - 1 };
+}
+
+function findPath(start, target, rowSize, occupiedTiles) {
+  const grid2DArray = new PF.Grid(rowSize, rowSize);
+  occupiedTiles.forEach((tile) => {
+    const x = Math.floor(tile / rowSize);
+    const y = tile % rowSize;
+    grid2DArray.setWalkableAt(x, y, false);
+  });
+
+  console.log("grid2DArray", grid2DArray);
+
+  const finder = new PF.AStarFinder();
+  const path = finder.findPath(
+    start.x,
+    start.y,
+    target.x,
+    target.y,
+    grid2DArray
+  );
+  // console.log("path", path);
+
+  // convert each square in grid2DArray to its corresponding index in the 1D array
+  const convertedPath = path.map(([x, y]) => x * rowSize + y);
+  // convertedPath.pop();
+
+  return convertedPath;
 }
 
 function renderMovementRoll(roll) {

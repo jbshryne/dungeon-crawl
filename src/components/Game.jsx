@@ -1,6 +1,3 @@
-// import { INVALID_MOVE } from "boardgame.io/core";
-import { calculateMoveTiles, getAdjacentTiles } from "./Board";
-
 const hero = {
   id: 0,
   name: "Quester",
@@ -47,18 +44,6 @@ const startingBoxes = [
   { position: boxPosition(occupiedTiles), type: "BOX" },
 ];
 
-function getHitTextArray(damage) {
-  const hitTextArray = [];
-  if (damage <= 1) {
-    hitTextArray.push("IT CONNECTS!", "SUCCESS!", "GOT 'EM!", "NICE!");
-  } else if ((damage = 2)) {
-    hitTextArray.push("BOOM!", "WHAM!", "OUCH!", "OOF!");
-  } else if (damage >= 3) {
-    hitTextArray.push("KAPOW!", "WOW!", "AMAZING!", "INCREDIBLE!");
-  }
-  return hitTextArray;
-}
-
 export const DungeonThrowdown = {
   setup: () => ({
     tiles: Array(81)
@@ -82,19 +67,7 @@ export const DungeonThrowdown = {
   }),
 
   moves: {
-    getDistance: ({ G, ctx }, tileIdx) => {
-      const currentPlayer = G.players[ctx.currentPlayer];
-      const currentPosition = currentPlayer.position;
-      const distance = calculateMoveTiles(
-        currentPosition,
-        tileIdx,
-        G.tiles.length
-      );
-      console.log(distance);
-    },
-
-    moveOneSquare: ({ G, events, playerID }, tileIdx) => {
-      console.log("playerID", playerID);
+    moveOneSquare: ({ G, events, ctx, playerID }, tileIdx) => {
       const currentPlayer = G.players[playerID];
       const currentPosition = currentPlayer.position;
       const currentPlayerName = currentPlayer.name;
@@ -112,11 +85,40 @@ export const DungeonThrowdown = {
       }
     },
 
-    attack: ({ G, playerID, random }, tileIdx) => {
+    toNewTile: ({ G, ctx, playerID }, tileIdx, distance) => {
       const currentPlayer = G.players[playerID];
-      const isPlayer1 = playerID === "0";
+      const currentPosition = currentPlayer.position;
+      const currentPlayerName = currentPlayer.name;
+
+      if (!currentPlayer.hasMoved) {
+        if (distance <= currentPlayer.moveTiles) {
+          G.tiles[currentPosition] = null;
+          G.tiles[tileIdx] = currentPlayerName;
+          G.players[playerID].position = tileIdx;
+          currentPlayer.moveTiles -= distance;
+          currentPlayer.isMoving = true;
+        } else {
+          G.messages.game = "You can't move that far!";
+        }
+      }
+      if (currentPlayer.moveTiles === 0) {
+        currentPlayer.isMoving = false;
+        currentPlayer.hasMoved = true;
+      }
+    },
+
+    attack: ({ G, ctx, playerID, random }, tileIdx) => {
+      const currentPlayer = G.players[playerID];
       const currentPlayerName = currentPlayer.name;
       const currentPlayerTeam = currentPlayer.team;
+      const isPlayer1 = playerID === "0";
+      // let isActivePlayer;
+
+      // if (isMultiplayer) {
+      //   isActivePlayer = playerID === ctx.currentPlayer;
+      //   console.log("isActivePlayer", isActivePlayer);
+      // }
+
       const attackedPlayer = G.players.find(
         (player) => player.position === tileIdx
       );
@@ -329,13 +331,57 @@ export const DungeonThrowdown = {
       0
     );
     if (otherTeamHitPoints === 0 && currentPlayer.hasDoneAction) {
-      // console.log(`Team ${currentTeam} wins!`);
       return { winner: currentTeam };
     }
   },
 };
 
-export function getBattleRoll(diceArray, type) {
+function getAdjacentTiles(tileIdx, boardSize) {
+  const rowSize = Math.sqrt(boardSize);
+  const sameRow = Math.floor(tileIdx / rowSize);
+  const sameColumn = tileIdx % rowSize;
+  const adjacentTiles = [];
+
+  if (sameRow > 0) {
+    adjacentTiles.push(tileIdx - rowSize);
+  }
+  if (sameRow < rowSize - 1) {
+    adjacentTiles.push(tileIdx + rowSize);
+  }
+  if (sameColumn > 0) {
+    adjacentTiles.push(tileIdx - 1);
+  }
+  if (sameColumn < rowSize - 1) {
+    adjacentTiles.push(tileIdx + 1);
+  }
+
+  // console.log(adjacentTiles);
+
+  return adjacentTiles;
+}
+
+function getHitTextArray(damage) {
+  const hitTextArray = [];
+  if (damage <= 1) {
+    hitTextArray.push("IT CONNECTS!", "SUCCESS!", "GOT 'EM!", "NICE!");
+  } else if ((damage = 2)) {
+    hitTextArray.push("BOOM!", "WHAM!", "OUCH!", "OOF!");
+  } else if (damage >= 3) {
+    hitTextArray.push("KAPOW!", "WOW!", "AMAZING!", "INCREDIBLE!");
+  }
+  return hitTextArray;
+}
+
+function boxPosition(occupiedTiles) {
+  const newBox = Math.floor(Math.random() * 81);
+  if (occupiedTiles.includes(newBox)) {
+    return boxPosition(occupiedTiles);
+  }
+  occupiedTiles.push(newBox);
+  return newBox;
+}
+
+function getBattleRoll(diceArray, type) {
   const dice = diceArray.map((die) => {
     if (die === 1) {
       return "blank";
@@ -348,16 +394,7 @@ export function getBattleRoll(diceArray, type) {
   return { result: dice, type };
 }
 
-function boxPosition(occupiedTiles) {
-  const newBox = Math.floor(Math.random() * 81);
-  if (occupiedTiles.includes(newBox)) {
-    return boxPosition(occupiedTiles);
-  }
-  occupiedTiles.push(newBox);
-  return newBox;
-}
-
-export function getBoxRoll(result) {
+function getBoxRoll(result) {
   // console.log("getBoxRoll", result);
   if (result === 12) {
     return { name: "Scroll of Lightning", type: "DMG", amount: 1 };

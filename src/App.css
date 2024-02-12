@@ -110,6 +110,14 @@ img {
   /* color: rgb(221, 196, 162); */
 }
 
+.select-page p {
+  font-family: Alegreya, serif;
+  font-weight: 500;
+  font-size: 22px;
+  line-height: 1.5;
+  color: rgb(218, 215, 215);
+}
+
 .rules-page {
   display: flex;
   flex-direction: column;
@@ -222,12 +230,11 @@ ul {
   justify-content: center;
 }
 
-/* .tile:hover, */
-.tile.adjacent {
+.tile.hovered {
   background-color: rgb(151, 115, 115);
 }
 
-.tile.hovered {
+.tile.adjacent {
   background-color: rgb(171, 171, 144);
 }
 

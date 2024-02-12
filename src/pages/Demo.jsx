@@ -12,7 +12,7 @@ const Multiplayer = Client({
   //   multiplayer: SocketIO({ server: "localhost:8000" }),
 });
 
-function BoardDisplay({ G, ctx, moves, events, playerID }) {
+function BoardDisplay({ G, ctx, moves, events, playerID, reset }) {
   const [gameMessage, setGameMessage] = useState(G.messages.game);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ function BoardDisplay({ G, ctx, moves, events, playerID }) {
     setGameMessage(G.messages.game);
   }, [G.messages.game]);
 
-  console.log("playerID", playerID);
+  // console.log("playerID", playerID);
 
   return (
     <div id="board-display">
