@@ -27,9 +27,31 @@ function App() {
               // </AuthChecker>
             }
           />
-          <Route path="/select" element={<SelectAvatar />} />
-          <Route path="/game/0" element={<Multiplayer playerID="0" />} />
-          <Route path="/game/1" element={<Multiplayer playerID="1" />} />
+          <Route
+            path="/select"
+            element={
+              // <AuthChecker>
+              <SelectAvatar />
+              // </AuthChecker>
+            }
+          />
+          <Route
+            path="/game/0"
+            element={
+              // <AuthChecker>
+              <Multiplayer playerID="0" />
+              // </AuthChecker>
+            }
+          />
+          <Route
+            path="/game/1"
+            element={
+              // <AuthChecker>
+              <Multiplayer playerID="1" />
+              // </AuthChecker>
+            }
+          />
+          <Route path="*" element={<Home />} />
         </Routes>
       </main>
     </div>

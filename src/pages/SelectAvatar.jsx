@@ -6,24 +6,30 @@ const SelectAvatar = () => {
   return (
     <div className="select-page">
       <h1>Choose your avatar</h1>
-      <div className="controls">
+      <br />
+      <div>
         <Link to="/game/0">
           <button>
-            <GiSwordwoman style={{ fontSize: "50" }} />
+            <GiSwordwoman style={{ fontSize: "40" }} /> <big>Quester</big>
           </button>
         </Link>
         <Link to="/game/1">
           <button>
-            <GiFishMonster style={{ fontSize: "50" }} />
+            <GiFishMonster style={{ fontSize: "40" }} /> <big>Monster</big>
           </button>
         </Link>
       </div>
-      <p>
-        <b>NOTE: Multiplayer mode is currently under development</b>
-      </p>
-      <Link to="game">
-        <button>PLAY LOCAL GAME</button>
-      </Link>
+      <br />
+      <br />
+      <br />
+      <div className="controls">
+        <p>
+          <b>NOTE: Multiplayer mode is currently under development</b>
+        </p>
+        <Link to="game">
+          <button>PLAY LOCAL GAME</button>
+        </Link>
+      </div>
     </div>
   );
 };

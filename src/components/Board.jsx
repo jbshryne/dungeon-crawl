@@ -74,7 +74,7 @@ export function Board({
       // "arrowdown",
       // "arrowright",
       "r",
-      "e",
+      // "e",
       "enter",
     ];
 
@@ -99,12 +99,13 @@ export function Board({
         // case "arrowright":
         //   newTile = currentPosition + 1;
         //   break;
-        case "e":
+        // case "e":
         case "enter":
           events.endTurn();
           break;
         case "r":
           reset();
+          break;
         default:
           break;
       }
@@ -258,15 +259,22 @@ export function Board({
 
     const isCurrentPlayer = currentPlayer.name === name;
     let isActivePlayer;
+    let displayName;
+
+    console.log("name", name);
+    console.log("G.players[playerID]", G.players[playerID]);
+
     if (isMultiplayer) {
       isActivePlayer =
         currentPlayer.name === player.name && playerID === ctx.currentPlayer;
+      displayName = name === G.players[playerID].name ? "You" : "Opponent";
     } else {
       isActivePlayer = isCurrentPlayer;
+      displayName = name;
     }
 
     return (
-      <div className={`player-panel ${isActivePlayer && "active"}`}>
+      <div className={`player-panel ${isCurrentPlayer && "active"}`}>
         <section className="player-status-section">
           <p className="player-name">
             {name === "Quester" ? (
@@ -274,7 +282,7 @@ export function Board({
             ) : (
               <GiFishMonster style={{ fontSize: 30 }} />
             )}{" "}
-            {name}
+            {displayName}
           </p>
         </section>
         <section className="player-status-section">
@@ -328,12 +336,14 @@ export function Board({
             <i>(+{powerup.amount} to Defense Dice)</i>
           )}
         </span>
+        {/* <div className="controls"> */}
         <button
           onClick={() => events.endTurn()}
           className={!isActivePlayer ? "disabled" : ""}
         >
           End Turn
         </button>
+        {/* </div> */}
       </div>
     );
   };
