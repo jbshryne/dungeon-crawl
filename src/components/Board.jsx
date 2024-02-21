@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-// import { gsap } from "gsap";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
 import BattleDie from "./BattleDie";
 import {
   GiFishMonster,
@@ -25,7 +26,7 @@ export function Board({
   reset,
 }) {
   // declare state variables
-  // console.log("gsap", gsap);
+  // console.log("useGSAP", useGSAP);
   const [p1Status, setP1Status] = useState(G.messages.p1);
   const [p2Status, setP2Status] = useState(G.messages.p2);
   const [p1BattleDice, setP1BattleDice] = useState(G.battleDice.p1);
@@ -109,30 +110,6 @@ export function Board({
         default:
           break;
       }
-
-      //     if (isAdjacentTile(newTile, currentPosition, boardTiles)) {
-      //       if (G.tiles[newTile] === null) {
-      //         // BUG: Opening a box then trying to move to that tile
-      //         // will act as if the box is still there
-      //         // (This does not happen when trying to move by mouse click)
-      //         moves.moveOneSquare(newTile);
-      //       } else if (G.tiles[newTile] === "BOX") {
-      //         // console.log("tile", newTile, "contains", G.tiles[newTile]); // OUTPUT: tile 0 contains BOX
-      //         const openedBox = sessionStorage.getItem(
-      //           "dungeon-throwdown_openedBox"
-      //         );
-      //         // console.log("openedBox", openedBox);
-
-      //         if (parseInt(openedBox) === newTile) {
-      //           moves.moveOneSquare(newTile);
-      //         } else {
-      //           moves.openBox(newTile);
-      //           sessionStorage.setItem("dungeon-throwdown_openedBox", newTile);
-      //         }
-      //       } else if (G.tiles[newTile].team !== currentPlayerTeam) {
-      //         moves.attack(newTile);
-      //       }
-      //     }
     }
   };
 
@@ -156,7 +133,7 @@ export function Board({
         moves.moveOneSquare(tileIdx);
       }
     } else {
-      console.log("moveTiles", moveTiles);
+      // console.log("moveTiles", moveTiles);
       if (G.tiles[tileIdx] === null)
         moves.toNewTile(tileIdx, moveTiles.distance);
     }
@@ -179,7 +156,7 @@ export function Board({
     if (currentPlayer.moveTiles >= moveInfo.path.length - 1 && isActivePlayer) {
       setPathTiles(moveInfo.path);
       if (moveInfo.path.includes(tileIdx)) setHoveredTile(tileIdx);
-      console.log("tileIdx in onTileHover", tileIdx);
+      // console.log("tileIdx in onTileHover", tileIdx);
     }
   };
 
@@ -261,8 +238,8 @@ export function Board({
     let isActivePlayer;
     let displayName;
 
-    console.log("name", name);
-    console.log("G.players[playerID]", G.players[playerID]);
+    // console.log("name", name);
+    // console.log("G.players[playerID]", G.players[playerID]);
 
     if (isMultiplayer) {
       isActivePlayer =
@@ -423,7 +400,7 @@ function findPath(start, target, rowSize, occupiedTiles) {
     grid2DArray.setWalkableAt(x, y, false);
   });
 
-  console.log("grid2DArray", grid2DArray);
+  // console.log("grid2DArray", grid2DArray);
 
   const finder = new PF.AStarFinder();
   const path = finder.findPath(
